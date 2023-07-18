@@ -112,7 +112,6 @@ const CenterPage = () => {
       centerFields[5].defaultValue = options.find(
         (option) => option.value === center_data.manager?.id
       );
-      console.log("vaaa", centerFields);
     }
   }, [center_data]);
 
@@ -153,7 +152,10 @@ const CenterPage = () => {
         userIsLoading={userIsLoading}
         show={updateModalShow}
         center_data={center_data}
-        onHide={() => setUpdateModalShow(false)}
+        onHide={() => {
+          setUpdateModalShow(false);
+          reset();
+        }}
         register={register}
         setValue={setValue}
         handleSubmit={handleSubmit}

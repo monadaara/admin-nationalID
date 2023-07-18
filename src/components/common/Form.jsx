@@ -3,6 +3,7 @@ import React, { CSSProperties } from "react";
 import Select from "react-select";
 
 const CustomForm = ({ fields, register, errors, setValue, data }) => {
+  console.log("errr", errors);
   return (
     <>
       {fields.map((field) => (

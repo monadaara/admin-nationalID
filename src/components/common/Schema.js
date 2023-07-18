@@ -11,6 +11,9 @@ export const centerSchema = Joi.object({
   latitude: Joi.number().required(),
   longitude: Joi.number().required(),
   status: Joi.boolean().allow(""),
+  days: Joi.array()
+    .items(Joi.string().valid("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"))
+    .required(),
 });
 export const deviceSchema = Joi.object({
   device: Joi.string().required(),

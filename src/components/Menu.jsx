@@ -27,9 +27,9 @@ const Menu = () => {
     );
   };
 
-  const renderMenuItem = (menuItem) => {
+  const renderMenuItem = (menuItem, index) => {
     return (
-      <li key={menuItem.id} className="py-2">
+      <li key={index} className="py-2">
         <NavLink
           onClick={() => toggleSubMenu(menuItem.id)}
           className="flex items-center hover:text-bluelight"
@@ -45,7 +45,9 @@ const Menu = () => {
         </NavLink>
         {menuItem.isOpen && menuItem.children?.length > 0 && (
           <ul className="pl-4">
-            {menuItem.children?.map((child) => renderMenuItem(child))}
+            {menuItem.children?.map((child, index) =>
+              renderMenuItem(child, index)
+            )}
           </ul>
         )}
       </li>
@@ -53,8 +55,10 @@ const Menu = () => {
   };
 
   return (
-    <div className=" bg-slate-700 text-white h-screen w-64 py-4 px-6">
-      <ul>{menuItems.map((menuItem) => renderMenuItem(menuItem))}</ul>
+    <div className=" bg-slate-700 text-white h-screen w-64 py-4  px-6">
+      <ul className="mt-7">
+        {menuItems.map((menuItem, index) => renderMenuItem(menuItem, index))}
+      </ul>
     </div>
   );
 };

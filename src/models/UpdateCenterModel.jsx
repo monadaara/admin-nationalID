@@ -12,12 +12,17 @@ import {
   ModalFooter,
   ModalCloseButton,
   Textarea,
+  Checkbox,
 } from "@chakra-ui/react";
 import CustomForm from "../components/common/Form";
 
 import { centerFields } from "../components/common/Schema";
 import { useMutation, useQueryClient } from "react-query";
-import { updateCenter, updateCenterLocation } from "../service/centers";
+import {
+  setDays,
+  updateCenter,
+  updateCenterLocation,
+} from "../service/centers";
 import { toast } from "react-toastify";
 
 const UpdateCenterModel = ({
@@ -35,8 +40,19 @@ const UpdateCenterModel = ({
   const queryClient = useQueryClient();
   const locationMutation = useMutation((data) => updateCenterLocation(data));
   const centerMutation = useMutation((data) => updateCenter(data));
+  const daysMutation = useMutation((data) => setDays(data));
+  const daysOfWeek = [
+    { short: "Sun", long: "Sunday" },
+    { short: "Mon", long: "Monday" },
+    { short: "Tue", long: "Tuesday" },
+    { short: "Wed", long: "Wednesday" },
+    { short: "Thu", long: "Thursday" },
+    { short: "Fri", long: "Friday" },
+    { short: "Sat", long: "Saturday" },
+  ];
 
   const onSubmit = (data) => {
+    let days = [];
     locationMutation.mutate(
       {
         name: data.location,
@@ -48,7 +64,7 @@ const UpdateCenterModel = ({
         onSuccess: (location) => {
           let obj = { ...data };
           delete obj.location;
-          console.log("obj", obj);
+
           centerMutation.mutate(
             {
               ...obj,
@@ -57,7 +73,13 @@ const UpdateCenterModel = ({
               location: location.id,
             },
             {
-              onSuccess: (data) => {
+              onSuccess: (center) => {
+                data.days.forEach((day) => {
+                  days.push({ name: day, center: center.id });
+                });
+
+                daysMutation.mutate(days);
+
                 toast.success("center updated succesfuly.", {
                   theme: "colored",
                 });
@@ -99,6 +121,24 @@ const UpdateCenterModel = ({
                 setValue={setValue}
                 data={center_data}
               />
+            </div>
+            <div className="my-3">
+              {daysOfWeek.map((day, index) => {
+                return (
+                  <Checkbox
+                    key={day.short}
+                    value={day.short}
+                    className="mr-5"
+                    {...register("days")}
+                    defaultChecked={
+                      index < center_data?.days?.length &&
+                      center_data?.days?.[index].name
+                    }
+                  >
+                    {day.long}
+                  </Checkbox>
+                );
+              })}
             </div>
             <ModalFooter>
               <Button className="mr-4" colorScheme="red" onClick={onHide}>

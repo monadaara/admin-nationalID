@@ -167,21 +167,6 @@ const DevicePage = () => {
         lists={lists}
       />
 
-      {/* <DeviceModal
-        centers={centers}
-        device_data={device_data}
-        centerIsloading={centerIsloading}
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        register={register}
-        setValue={setValue}
-        handleSubmit={handleSubmit}
-        header={"Create device"}
-        errors={errors}
-        is_updating={is_updating}
-        deviceFields={deviceFields}
-        onSubmit={onSubmit}
-      /> */}
       <DeviceModal
         centers={centers}
         centerIsloading={centerIsloading}

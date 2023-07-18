@@ -12,13 +12,15 @@ import {
   ModalFooter,
   ModalCloseButton,
   Textarea,
+  Checkbox,
+  CheckboxGroup,
 } from "@chakra-ui/react";
 import CustomForm from "../components/common/Form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { useForm } from "react-hook-form";
 import { centerSchema } from "../components/common/Schema";
 import { useMutation, useQueryClient } from "react-query";
-import { setCenter, setCenterLocation } from "../service/centers";
+import { setCenter, setCenterLocation, setDays } from "../service/centers";
 import { toast } from "react-toastify";
 
 const AddCenterModel = ({
@@ -36,12 +38,25 @@ const AddCenterModel = ({
     setValue,
   } = useForm({ resolver: joiResolver(centerSchema) });
 
+  const daysOfWeek = [
+    { short: "Sun", long: "Sunday" },
+    { short: "Mon", long: "Monday" },
+    { short: "Tue", long: "Tuesday" },
+    { short: "Wed", long: "Wednesday" },
+    { short: "Thu", long: "Thursday" },
+    { short: "Fri", long: "Friday" },
+    { short: "Sat", long: "Saturday" },
+  ];
+
   const queryClient = useQueryClient();
   const locationMutation = useMutation((data) => setCenterLocation(data));
   const centerMutation = useMutation((data) => setCenter(data));
 
+  const daysMutation = useMutation((data) => setDays(data));
+
   const onSubmit = (data) => {
-    console.log("dataaaaaa", data);
+    let days = [];
+
     locationMutation.mutate(
       {
         name: data.location,
@@ -56,7 +71,12 @@ const AddCenterModel = ({
               location: location.id,
             },
             {
-              onSuccess: (data) => {
+              onSuccess: (center) => {
+                data.days.forEach((day) => {
+                  days.push({ name: day, center: center.id });
+                });
+
+                daysMutation.mutate(days);
                 toast.success("center created succesfuly.", {
                   theme: "colored",
                 });
@@ -108,6 +128,22 @@ const AddCenterModel = ({
                 errors={errors}
                 setValue={setValue}
               />
+            </div>
+
+            <div className="my-3">
+              {daysOfWeek.map((day) => {
+                return (
+                  <Checkbox
+                    key={day.short}
+                    value={day.short}
+                    className="mr-5"
+                    {...register("days")}
+                    defaultChecked
+                  >
+                    {day.long}
+                  </Checkbox>
+                );
+              })}
             </div>
             <ModalFooter>
               <Button className="mr-4" colorScheme="red" onClick={onHide}>

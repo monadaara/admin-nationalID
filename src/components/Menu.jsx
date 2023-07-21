@@ -7,6 +7,7 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
+import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { menu } from "../components/common/menus";
 
 const Menu = () => {
@@ -29,17 +30,21 @@ const Menu = () => {
 
   const renderMenuItem = (menuItem, index) => {
     return (
-      <li key={index} className="py-2">
+      <li key={index} className="py-2 text-sm">
         <NavLink
           onClick={() => toggleSubMenu(menuItem.id)}
           className="flex items-center hover:text-bluelight"
           to={menuItem.link}
         >
-          {<menuItem.icon className="text-white" />}
+          {<menuItem.icon className="text-white text-xs" />}
           <span className="ml-2">{menuItem.title}</span>
           {menuItem.children?.length > 0 && (
             <button className="ml-auto focus:outline-none">
-              {menuItem.isOpen ? <FaChevronUp /> : <FaChevronDown />}
+              {menuItem.isOpen ? (
+                <FiChevronRight className="rotate-90" />
+              ) : (
+                <FiChevronRight />
+              )}
             </button>
           )}
         </NavLink>
@@ -55,7 +60,7 @@ const Menu = () => {
   };
 
   return (
-    <div className=" bg-slate-700 text-white h-screen w-64 py-4  px-6">
+    <div className=" bg-slate-700 text-white h-screen w-full py-4  px-6">
       <ul className="mt-7">
         {menuItems.map((menuItem, index) => renderMenuItem(menuItem, index))}
       </ul>

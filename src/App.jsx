@@ -5,6 +5,8 @@ import MenuLayout from "./layout/menuLayout";
 import Home from "./pages/Home";
 import CenterPage from "./pages/Center";
 import DevicePage from "./pages/Device";
+import ApplicantPage from "./pages/Applicant";
+import ProcessPage from "./pages/Process";
 
 const App = () => {
   return (
@@ -14,6 +16,8 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path="/centers" element={<CenterPage />} />
           <Route path="/devices" element={<DevicePage />} />
+          <Route path="/applicants" element={<ApplicantPage />} />
+          <Route path="/processing" element={<ProcessPage />} />
         </Route>
         <Route path="login" element={<LoginPage />} />
       </Routes>

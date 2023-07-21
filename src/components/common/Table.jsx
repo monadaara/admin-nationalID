@@ -11,6 +11,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Box,
 } from "@chakra-ui/react";
 
 const CustomTable = ({ columns, data, lists, setModal_data }) => {
@@ -30,83 +31,107 @@ const CustomTable = ({ columns, data, lists, setModal_data }) => {
   };
 
   return (
-    <Table variant="striped" colorScheme="gray" size="md">
-      {data?.length ? (
-        <>
-          <Thead>
-            <Tr bg="gray.300">
-              {columns.map((column) => (
+    <Box className="" overflowX="auto">
+      <Table variant="striped" colorScheme="gray" size="md">
+        {data?.length ? (
+          <>
+            <Thead>
+              <Tr bg="gray.300">
+                {columns.map((column) => (
+                  <Th
+                    textTransform={"capitalize"}
+                    key={column}
+                    py={2}
+                    px={4}
+                    textAlign="left"
+                    color="gray.700"
+                    fontWeight="semibold"
+                  >
+                    {column.replace(/_/g, " ")}
+                  </Th>
+                ))}
                 <Th
-                  key={column}
+                  textTransform={"capitalize"}
                   py={2}
                   px={4}
                   textAlign="left"
                   color="gray.700"
                   fontWeight="semibold"
                 >
-                  {column}
+                  Actions
                 </Th>
-              ))}
-              <Th py={2} px={4}></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data?.map((row, index) => {
-              const columnsToRender = columns.filter(
-                (column) => column !== "Status"
-              ); // Exclude "Status" from table body columns
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data?.map((row, index) => {
+                const columnsToRender = columns.filter(
+                  (column) => column !== "Status"
+                ); // Exclude "Status" from table body columns
 
-              return (
-                <Tr key={index} bg={index % 2 === 0 ? "gray.100" : ""}>
-                  {columnsToRender.map((column) => (
-                    <Td key={column} py={2} px={4}>
-                      {row[column]}
-                    </Td>
-                  ))}
-                  {hasStatusColumn && (
+                return (
+                  <Tr key={index} bg={index % 2 === 0 ? "gray.100" : ""}>
+                    {columnsToRender.map((column) => (
+                      <Td key={column} py={2} px={4}>
+                        {row[column]}
+                      </Td>
+                    ))}
+                    {hasStatusColumn && (
+                      <Td py={2} px={4}>
+                        {row.Status ? (
+                          <button
+                            className={`${getStatusColor(
+                              row.Status
+                            )} rounded-full px-4 py-1 `}
+                          >
+                            {row.Status}
+                          </button>
+                        ) : (
+                          <span>No Status</span>
+                        )}
+                      </Td>
+                    )}
                     <Td py={2} px={4}>
-                      {row.Status ? (
-                        <button
-                          className={`${getStatusColor(
-                            row.Status
-                          )} rounded-full px-4 py-1 `}
-                        >
-                          {row.Status}
-                        </button>
+                      {lists?.length ? (
+                        <Menu>
+                          <MenuButton>
+                            <BsThreeDotsVertical className="text-gray-600" />
+                          </MenuButton>
+                          <MenuList>
+                            {lists.map((list) => (
+                              <MenuItem
+                                onClick={() => {
+                                  setModal_data(row);
+                                  list.onclick();
+                                }}
+                                key={list.title}
+                              >
+                                {list.title}
+                              </MenuItem>
+                            ))}
+                          </MenuList>
+                        </Menu>
                       ) : (
-                        <span>No Status</span>
+                        <button
+                          onClick={() => {
+                            setModal_data(row);
+                          }}
+                          className="px-5 py-2 flex items-center text-white rounded bg-blue-500"
+                        >
+                          <span>{lists.icon}</span>
+                          {lists.title}
+                        </button>
                       )}
                     </Td>
-                  )}
-                  <Td py={2} px={4}>
-                    <Menu>
-                      <MenuButton>
-                        <BsThreeDotsVertical className="text-gray-600" />
-                      </MenuButton>
-                      <MenuList>
-                        {lists.map((list) => (
-                          <MenuItem
-                            onClick={() => {
-                              setModal_data(row);
-                              list.onclick();
-                            }}
-                            key={list.title}
-                          >
-                            {list.title}
-                          </MenuItem>
-                        ))}
-                      </MenuList>
-                    </Menu>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </>
-      ) : (
-        <p className="text-center w-full">No data found</p>
-      )}
-    </Table>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </>
+        ) : (
+          <p className="text-center w-full">No data found</p>
+        )}
+      </Table>
+    </Box>
   );
 };
 

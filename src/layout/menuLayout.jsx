@@ -5,13 +5,18 @@ import { Outlet } from "react-router-dom";
 
 const MenuLayout = () => {
   return (
-    <div className="flex">
-      <Menu />
-      <div className="flex flex-col w-screen">
-        <ProfileHeader />
-        <main className="flex-grow mx-14">
-          <Outlet />
-        </main>
+    <div className="w-screen ">
+      <div className="flex ">
+        <div className="w-[20%]">
+          <Menu />
+        </div>
+
+        <div className="flex flex-col  w-[80%]">
+          <ProfileHeader />
+          <main className=" mx-14">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   );

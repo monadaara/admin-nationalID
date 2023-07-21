@@ -98,7 +98,7 @@ const AddCenterModel = ({
   const options = [];
 
   !userIsLoading &&
-    users.forEach((user) =>
+    users?.forEach((user) =>
       options.push({
         value: user.id,
         label: user.first_name + " " + `(${user.username})`,

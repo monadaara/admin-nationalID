@@ -72,7 +72,7 @@ const DeviceFilter = ({
           }
         >
           <option value="all">All</option>
-          {centers.map((center) => (
+          {centers?.map((center) => (
             <option key={center.id} value={center.id}>
               {center.name}
             </option>

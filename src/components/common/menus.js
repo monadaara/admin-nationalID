@@ -47,7 +47,7 @@ export const menu = [
     isOpen: false,
   },
   {
-    id: 3,
+    id: 34,
     icon: FaHome,
     title: "ID's",
     link: "#",

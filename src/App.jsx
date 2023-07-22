@@ -7,6 +7,7 @@ import CenterPage from "./pages/Center";
 import DevicePage from "./pages/Device";
 import ApplicantPage from "./pages/Applicant";
 import ProcessPage from "./pages/Process";
+import UsersPage from "./pages/Users";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/devices" element={<DevicePage />} />
           <Route path="/applicants" element={<ApplicantPage />} />
           <Route path="/processing" element={<ProcessPage />} />
+          <Route path="/users" element={<UsersPage />} />
         </Route>
         <Route path="login" element={<LoginPage />} />
       </Routes>

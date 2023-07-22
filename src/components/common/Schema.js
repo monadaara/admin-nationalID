@@ -1,4 +1,6 @@
 import Joi from "joi";
+import { joiPasswordExtendCore } from "joi-password";
+const joiPassword = Joi.extend(joiPasswordExtendCore);
 
 export const centerSchema = Joi.object({
   name: Joi.string().required(),
@@ -21,6 +23,27 @@ export const deviceSchema = Joi.object({
   center: Joi.number().required(),
   status: Joi.boolean().allow(""),
 });
+export const userSchema = Joi.object({
+  first_name: Joi.string().required(),
+  middle_name: Joi.string().required(),
+  last_name: Joi.string().required(),
+  username: Joi.string().required(),
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .required(),
+  pasword: joiPassword
+    .string()
+    .minOfSpecialCharacters(2)
+    .minOfLowercase(2)
+    .minOfUppercase(2)
+    .minOfNumeric(2)
+    .noWhiteSpaces()
+    .onlyLatinCharacters()
+    .required(),
+  center: Joi.number().allow(""),
+  is_staff: Joi.boolean().required(),
+  // status: Joi.boolean().allow(""),
+});
 
 export const centerFields = [
   { label: "Name", type: "text", name: "name" },
@@ -39,6 +62,17 @@ export const deviceFields = [
   { label: "Device", type: "text", name: "device" },
   { label: "Type", type: "select", name: "type" },
   { label: "Center", type: "select", name: "center" },
+
+  // Add more fields as needed
+];
+export const userFields = [
+  { label: "First Name", type: "text", name: "first_name" },
+  { label: "Middle Name", type: "text", name: "middle_name" },
+  { label: "Last Name", type: "text", name: "last_name" },
+  { label: "Username", type: "text", name: "username" },
+  { label: "Email", type: "text", name: "email" },
+  { label: "Center", type: "select", name: "center" },
+  { label: "Is admin", type: "switch", name: "is_staff" },
 
   // Add more fields as needed
 ];

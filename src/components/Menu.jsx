@@ -60,10 +60,13 @@ const Menu = () => {
   };
 
   return (
-    <div className=" bg-slate-700 text-white h-screen w-full py-4  px-6">
-      <ul className="mt-7">
-        {menuItems.map((menuItem, index) => renderMenuItem(menuItem, index))}
-      </ul>
+    <div className="navbar-container fixed top-0 left-0 h-screen w-[17%] bg-slate-700 text-white overflow-y-auto">
+      <nav className="h-full py-4 px-6">
+        <ul className="mt-7">
+          {/* Your menu items rendering code */}
+          {menuItems.map((menuItem, index) => renderMenuItem(menuItem, index))}
+        </ul>
+      </nav>
     </div>
   );
 };

@@ -14,7 +14,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const PictureModel = ({ onHide, show, imageMutation }) => {
   const webcamRef = useRef(null);
-  const [capturedImageSrc, setCapturedImageSrc] = useState(null);
+  
 
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();

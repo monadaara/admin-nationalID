@@ -7,13 +7,13 @@ const MenuLayout = () => {
   return (
     <div className="w-screen ">
       <div className="flex ">
-        <div className="w-[20%]">
+        <div className="w-[17%]">
           <Menu />
         </div>
 
-        <div className="flex flex-col  w-[80%]">
+        <div className="flex flex-col  w-[83%]">
           <ProfileHeader />
-          <main className=" mx-14">
+          <main className=" mx-10 ">
             <Outlet />
           </main>
         </div>

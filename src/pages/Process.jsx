@@ -1,22 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { useLocation } from "react-router-dom";
 import { getAplicant } from "../service/appointment";
 import CustomTable from "../components/common/Table";
 import { BsPlus } from "react-icons/bs";
-import { FaRegUser } from "react-icons/fa";
+import { FaRegUser, FaRegHandPaper } from "react-icons/fa";
 import PictureModel from "../models/PictureModel";
 import { getAcknowledgement, removeBg, setIDs } from "../service/processing";
 import DeviceModal from "../models/DeviceModal";
 import { toast } from "react-toastify";
 import AknowledgementModal from "../models/AknowledgementModel";
+import Webcam from "react-webcam";
+import { CallSGIFPGetData } from "./../service/biometricFun";
+import {
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderMark,
+  Box,
+} from "@chakra-ui/react";
 
 const ProcessPage = () => {
   const { applicant_data, setApplicant_data } = useState();
+  const webcamRef = useRef(null);
   const [modalShow, setModalShow] = useState(false);
   const [image, setImage] = useState({ image: "", id: "" });
+  const [finger_data, setFinger_data] = useState({
+    template1: "",
+    template2: "",
+    img1: "",
+    img2: "",
+    quality1: "",
+    quality2: "",
+  });
   const [acknow_id, setAcknow_id] = useState("");
   const [acknowModel, setAcknowModel] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [sliderValue, setSliderValue] = useState(50);
 
   const applicant_id = localStorage.getItem("applicant_id");
 
@@ -46,7 +67,11 @@ const ProcessPage = () => {
     },
   });
 
-  console.log("acknowlegement", acknowlegement);
+  const labelStyles = {
+    mt: "2",
+    ml: "-2.5",
+    fontSize: "sm",
+  };
 
   const columns = [
     "Full_name",
@@ -98,6 +123,26 @@ const ProcessPage = () => {
     }
   }, [acknowlegement]);
 
+  const capture = () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    // Do something with the captured image
+
+    // Resize the captured image to national ID size
+    const canvas = document.createElement("canvas");
+    canvas.width = 600; // Width in pixels for the national ID size
+    canvas.height = 400; // Height in pixels for the national ID size
+    const ctx = canvas.getContext("2d");
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const resizedImageSrc = canvas.toDataURL("image/jpeg");
+
+      imageMutation.mutate(resizedImageSrc);
+    };
+    img.src = imageSrc;
+  };
+
   return (
     <div className=" ">
       <div className="bg-slate-200 h-[48px] my-10 flex items-center justify-between">
@@ -133,23 +178,96 @@ const ProcessPage = () => {
         </h1>
 
         <section className=" mt-10 flex items-center  gap-10">
-          <div className="">
+          <div className="space-y-4">
             <button
-              onClick={() => setModalShow(true)}
+              onClick={() => {
+                setIndex(1);
+                setImage("");
+              }}
               className="w-20 h-20 border-2 border-bluelight flex items-center justify-center"
             >
               <FaRegUser className="w-20" />
             </button>
+            <button
+              onClick={() => setIndex(2)}
+              className="w-20 h-20 border-2 border-bluelight flex items-center justify-center"
+            >
+              <FaRegHandPaper className="w-20" />
+            </button>
+            <button
+              onClick={() => setIndex(3)}
+              className="w-20 h-20 border-2 border-bluelight flex items-center justify-center"
+            >
+              <FaRegHandPaper className="w-20" />
+            </button>
           </div>
-          {image.image && (
-            <div className="w-32 h-24 border-2 border-bluelight ">
-              <img
-                className="w-full h-full"
-                src={"http://127.0.0.1:8000/" + image.image}
-                alt=""
-              />
+
+          <div className="w-full flex flex-col items-center justify-center">
+            {(index == 2 || index == 3) && finger_data[`quality${index}`] ? (
+              <Box className="w-24" pt={6} pb={2}>
+                <Slider aria-label="slider-ex-6" disabled>
+                  <SliderMark
+                    value={finger_data[`quality${index}`]}
+                    textAlign="center"
+                    bg={
+                      finger_data[`quality${index}`] < 60
+                        ? "red.500"
+                        : "blue.500"
+                    }
+                    color="white"
+                    mt="-10"
+                    ml="-5"
+                    w="12"
+                  >
+                    {finger_data[`quality${index}`]}%
+                  </SliderMark>
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb />
+                </Slider>
+              </Box>
+            ) : (
+              ""
+            )}
+            <div className="w-48 h-48 border-2   border-bluelight ">
+              {index == 1 && !image.image && (
+                <Webcam
+                  className="w-full h-full"
+                  audio={false}
+                  ref={webcamRef}
+                  screenshotFormat="image/jpeg"
+                />
+              )}
+              {index == 1 && image.image ? (
+                <img
+                  className="w-full h-full"
+                  src={"http://127.0.0.1:8000/" + image.image}
+                  alt=""
+                />
+              ) : index == 2 && finger_data[`img${index}`] ? (
+                <img
+                  className="w-full h-full"
+                  src={finger_data[`img${index}`]}
+                  alt=""
+                />
+              ) : (
+                ""
+              )}
             </div>
-          )}
+            <button
+              onClick={() => {
+                index == 1
+                  ? capture()
+                  : index == 2
+                  ? CallSGIFPGetData(index, setFinger_data)
+                  : "";
+              }}
+              className="bg-slate-700 mt-3 px-5 py-2 w-20 rounded text-white"
+            >
+              Scan
+            </button>
+          </div>
         </section>
       </div>
 

@@ -11,29 +11,49 @@ import {
   AlertDialogCloseButton,
   Button,
 } from "@chakra-ui/react";
+
+import Joi from "joi";
+import { joiPasswordExtendCore } from "joi-password";
+const joiPassword = Joi.extend(joiPasswordExtendCore);
 import CustomTable from "../components/common/Table";
 import { useForm } from "react-hook-form";
 import { userFields, userSchema } from "../components/common/Schema";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { toast } from "react-toastify";
-import { getDevices, setDevice, updateDevice } from "../service/device";
-import DeviceModal from "../models/DeviceModal";
-import DeviceFilter from "../components/DeviceFilter";
-import { get_users } from "../service/admin";
+import { updateDevice } from "../service/device";
+import {
+  delete_users,
+  get_users,
+  set_users,
+  update_users,
+} from "../service/admin";
 import UserModal from "../models/UserModel";
+import UsersFilter from "../components/UsersFilter";
+
+const createUserSchema = userSchema.keys({
+  password: joiPassword
+    .string()
+    .minOfSpecialCharacters(2)
+    .minOfLowercase(2)
+    .minOfUppercase(2)
+    .minOfNumeric(2)
+    .noWhiteSpaces()
+    .onlyLatinCharacters()
+    .required(),
+});
 
 const UsersPage = () => {
   const cancelRef = React.useRef();
   const queryClient = useQueryClient();
   const [modalShow, setModalShow] = React.useState(false);
   const [is_updating, setIs_updating] = React.useState(false);
-  const [deviceFilter, setDeviceFilter] = React.useState({
+  const [usersFilter, setUsersFilter] = React.useState({
     status: "all",
     name: "",
     center: "all",
   });
   const [deleteModalShow, setdeleteModalShow] = React.useState(false);
-  const [device_data, setDevice_data] = React.useState({});
+  const [users_data, setUsers_data] = React.useState({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["users"],
@@ -45,11 +65,11 @@ const UsersPage = () => {
     queryFn: getCenters,
   });
 
-  const deviceMutation = useMutation((data) => setDevice(data));
-  const updateDeviceMutation = useMutation((data) => updateDevice(data));
-  const deleteDeviceMutation = useMutation((data) => deleteDevice(data));
+  const usersMutation = useMutation((data) => set_users(data));
+  const updateUsersMutation = useMutation((data) => update_users(data));
+  const deleteUsersMutation = useMutation((data) => delete_users(data));
 
-  const columns = ["Name", "Email", "Username", "isAdmin", "Center"];
+  const columns = ["Name", "Email", "Username", "Type", "Center"];
   const lists = [
     {
       title: "Update Device",
@@ -64,28 +84,28 @@ const UsersPage = () => {
     },
   ];
 
-  const deviceFilteredByName =
-    deviceFilter.name &&
+  const usersFilteredByName =
+    usersFilter.name &&
     data?.filter((device) =>
-      device.name.toLowerCase().includes(deviceFilter.name.toLowerCase())
+      device.name.toLowerCase().includes(usersFilter.name.toLowerCase())
     );
 
-  const deviceFilteredByStatus =
-    deviceFilter.status && deviceFilter.status == "all"
+  const usersFilteredByStatus =
+    usersFilter.status && usersFilter.status == "all"
       ? data
-      : data?.filter((device) => device.status == deviceFilter.status);
+      : data?.filter((device) => device.status == usersFilter.status);
 
-  const deviceFilteredByCenter =
-    deviceFilter.center && deviceFilter.center == "all"
+  const usersFilteredByCenter =
+    usersFilter.center && usersFilter.center == "all"
       ? data
-      : data?.filter((device) => device.center?.id == deviceFilter.center);
+      : data?.filter((device) => device.center?.id == usersFilter.center);
 
-  let usersData = deviceFilter.name
-    ? deviceFilteredByName
-    : deviceFilter.status
-    ? deviceFilteredByStatus
-    : deviceFilter.center
-    ? deviceFilteredByCenter
+  let usersData = usersFilter.name
+    ? usersFilteredByName
+    : usersFilter.status
+    ? usersFilteredByStatus
+    : usersFilter.center
+    ? usersFilteredByCenter
     : data;
 
   const users = usersData?.map((user) => {
@@ -94,20 +114,25 @@ const UsersPage = () => {
       Username: user?.username,
       Email: user?.email,
       Center: user?.center?.name || "None",
-      isAdmin: user?.is_staff == true ? "Yes" : "No",
+      Type: user?.is_staff == true ? "Admin" : "User",
       ...user,
     };
   });
 
-  console.log("userdetail", users);
+  // console.log("userdetail", users);
   useEffect(() => {
-    if (device_data.id) {
-      setValue("device", device_data.name);
-      setValue("type", device_data.type);
-      setValue("center", device_data.center.id);
-      setValue("status", device_data.status == "active" ? true : false);
+    if (is_updating) {
+      setValue("first_name", users_data.first_name);
+      setValue("middle_name", users_data.middle_name);
+      setValue("last_name", users_data.last_name);
+      setValue("username", users_data.username);
+      setValue("email", users_data.email);
+      setValue("center", users_data?.center?.id || "");
+      setValue("is_staff", users_data.is_staff);
+    } else {
+      reset();
     }
-  }, [device_data]);
+  }, [users_data, is_updating]);
 
   const {
     register,
@@ -115,35 +140,33 @@ const UsersPage = () => {
     handleSubmit,
     reset,
     setValue,
-  } = useForm({ resolver: joiResolver(userSchema) });
+  } = useForm({
+    resolver: joiResolver(is_updating ? userSchema : createUserSchema),
+  });
 
   const onSubmit = (data) => {
     if (is_updating) {
-      updateDeviceMutation.mutate(
+      updateUsersMutation.mutate(
         {
           ...data,
-          name: data.device,
-          id: device_data.id,
-          status: data.status == true ? "active" : "blocked",
+          id: users_data.id,
         },
         {
           onSuccess: () => {
-            toast.success("device updated.", { theme: "colored" });
+            toast.success("user updated.", { theme: "colored" });
             queryClient.invalidateQueries(["users"]);
             setModalShow(false);
           },
         }
       );
     } else {
-      deviceMutation.mutate(
+      usersMutation.mutate(
         {
           ...data,
-          name: data.device,
-          status: "active",
         },
         {
           onSuccess: () => {
-            toast.success("device created.", { theme: "colored" });
+            toast.success("user created.", { theme: "colored" });
             queryClient.invalidateQueries(["users"]);
             setModalShow(false);
           },
@@ -152,13 +175,13 @@ const UsersPage = () => {
     }
   };
 
-  console.log("devicefilter", deviceFilter);
+  // console.log("usersfilter", centers);
   return (
     <div className="">
-      <DeviceFilter
+      <UsersFilter
         setIs_updating={setIs_updating}
-        setDeviceFilter={setDeviceFilter}
-        deviceFilter={deviceFilter}
+        setUsersFilter={setUsersFilter}
+        usersFilter={usersFilter}
         setModalShow={setModalShow}
         centers={centers}
       />
@@ -167,7 +190,7 @@ const UsersPage = () => {
         <h3 className="text-2xl font-medium my-6 py-2 px-3">Users</h3>
       </div>
       <CustomTable
-        setModal_data={setDevice_data}
+        setModal_data={setUsers_data}
         columns={columns}
         data={users}
         lists={lists}
@@ -177,7 +200,7 @@ const UsersPage = () => {
         centers={centers}
         centerIsloading={centerIsloading}
         show={modalShow}
-        device_data={device_data}
+        users_data={users_data}
         onHide={() => setModalShow(false)}
         register={register}
         header={"Update device"}
@@ -197,7 +220,7 @@ const UsersPage = () => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Device
+              Delete User
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -211,10 +234,11 @@ const UsersPage = () => {
               <Button
                 colorScheme="red"
                 onClick={() => {
-                  deleteDeviceMutation.mutate(device_data.id, {
+                  console.log("users_data", users_data);
+                  deleteUsersMutation.mutate(users_data.id, {
                     onSuccess: () => {
-                      queryClient.invalidateQueries(["devices"]);
-                      toast.success("device deleted.", { theme: "colored" });
+                      queryClient.invalidateQueries(["users"]);
+                      toast.success("user deleted.", { theme: "colored" });
                       setdeleteModalShow(false);
                     },
                   });

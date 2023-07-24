@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { deviceFields, deviceSchema } from "../components/common/Schema";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { toast } from "react-toastify";
-import { getDevices, setDevice, updateDevice } from "../service/device";
+import { deleteDevice, getDevices, setDevice, updateDevice } from "../service/device";
 import DeviceModal from "../models/DeviceModal";
 import DeviceFilter from "../components/DeviceFilter";
 
@@ -101,7 +101,10 @@ const DevicePage = () => {
       setValue("center", device_data.center.id);
       setValue("status", device_data.status == "active" ? true : false);
     }
-  }, [device_data]);
+    if (!is_updating) {
+      reset();
+    }
+  }, [device_data, is_updating]);
 
   const {
     register,

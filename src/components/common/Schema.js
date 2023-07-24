@@ -31,15 +31,7 @@ export const userSchema = Joi.object({
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),
-  pasword: joiPassword
-    .string()
-    .minOfSpecialCharacters(2)
-    .minOfLowercase(2)
-    .minOfUppercase(2)
-    .minOfNumeric(2)
-    .noWhiteSpaces()
-    .onlyLatinCharacters()
-    .required(),
+
   center: Joi.number().allow(""),
   is_staff: Joi.boolean().required(),
   // status: Joi.boolean().allow(""),
@@ -70,6 +62,7 @@ export const userFields = [
   { label: "Middle Name", type: "text", name: "middle_name" },
   { label: "Last Name", type: "text", name: "last_name" },
   { label: "Username", type: "text", name: "username" },
+  { label: "Password", type: "text", name: "password" },
   { label: "Email", type: "text", name: "email" },
   { label: "Center", type: "select", name: "center" },
   { label: "Is admin", type: "switch", name: "is_staff" },

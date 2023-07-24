@@ -20,7 +20,7 @@ const UserModal = ({
   show,
   centers,
   centerIsloading,
-  device_data,
+  users_data,
   register,
   setValue,
   handleSubmit,
@@ -43,25 +43,17 @@ const UserModal = ({
   userFields[6].options = options;
 
   if (is_updating) {
-    userFields[6].defaultValue = options.find(
-      (option) => option.value === device_data.center?.id
+    
+    userFields = userFields.filter((field) => field.name !== "password");
+    userFields[5].defaultValue = options.find(
+      (option) => option.value === users_data.center?.id
     );
   } else {
     userFields[6].defaultValue = "";
   }
 
-//   if (is_updating && !userFields.some((field) => field.type === "switch")) {
-//     userFields.push({ label: "Status", type: "switch", name: "status" });
-//   } else if (
-//     !is_updating &&
-//     userFields.some((field) => field.type === "switch")
-//   ) {
-//     userFields = userFields.filter((field) => field.type !== "switch");
-//   }
-
-  console.log("userFields",userFields)
+  // console.log("userFields", userFields);
   return (
-
     <Modal isOpen={show} onClose={onHide}>
       <ModalOverlay />
       <ModalContent width="800px" maxW="90%">
@@ -79,7 +71,7 @@ const UserModal = ({
                 errors={errors}
                 options={options}
                 setValue={setValue}
-                data={device_data}
+                data={users_data}
               />
             </div>
             <ModalFooter>

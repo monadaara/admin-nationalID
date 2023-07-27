@@ -15,7 +15,7 @@ import IDsFilter from "../components/IDsFilter";
 import IDModal from "../models/IDModel";
 import { BiShow } from "react-icons/bi";
 import { toast } from "react-toastify";
-const UnapprovedPage = () => {
+const ApprovedPage = () => {
   const navigate = useNavigate();
   const [filters, setfilters] = React.useState({
     code: "",
@@ -30,7 +30,7 @@ const UnapprovedPage = () => {
   const { isLoading, isError, error, data, isFetching, isPreviousData } =
     useQuery(
       ["ids", page, filters.code, filters.name],
-      () => get_nationalID(page, filters.code, filters.name, false),
+      () => get_nationalID(page, filters.code, filters.name, true),
       {
         keepPreviousData: true,
       }
@@ -100,7 +100,7 @@ const UnapprovedPage = () => {
 
       <div className="bg-slate-200 h-[48px] mb-10 flex items-center justify-between">
         <h3 className="text-2xl font-medium my-6 py-2 px-3">
-          Unapproved ID cards
+          Approved ID cards
         </h3>
         <div className="flex px-10">
           <button
@@ -136,9 +136,10 @@ const UnapprovedPage = () => {
         show={ModalShow}
         onHide={() => setModalShow(false)}
         ids={idsData}
+        is_approve={true}
       />
     </div>
   );
 };
 
-export default UnapprovedPage;
+export default ApprovedPage;

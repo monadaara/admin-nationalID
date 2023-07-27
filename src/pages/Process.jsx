@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getAplicant } from "../service/appointment";
 import CustomTable from "../components/common/Table";
 import { BsPlus } from "react-icons/bs";
 import { FaRegUser, FaRegHandPaper } from "react-icons/fa";
 import PictureModel from "../models/PictureModel";
-import { getAcknowledgement, removeBg, setIDs } from "../service/processing";
+import {
+  getAcknowledgement,
+  removeBg,
+  setIDs,
+  set_fingerprint,
+} from "../service/processing";
 import DeviceModal from "../models/DeviceModal";
 import { toast } from "react-toastify";
 import AknowledgementModal from "../models/AknowledgementModel";
@@ -24,6 +29,7 @@ import {
 const ProcessPage = () => {
   const { applicant_data, setApplicant_data } = useState();
   const webcamRef = useRef(null);
+  const navigate = useNavigate();
   const [modalShow, setModalShow] = useState(false);
   const [image, setImage] = useState({ image: "", id: "" });
   const [finger_data, setFinger_data] = useState({
@@ -57,21 +63,26 @@ const ProcessPage = () => {
       setModalShow(false);
     },
   });
-  const IDsMutation = useMutation((data) => setIDs(data), {
+  const fingerprintMutation = useMutation((data) => set_fingerprint(data), {
     onSuccess: (data) => {
       setAcknow_id(data?.qrcode?.id);
       toast.success("Seccessfully, registered", { theme: "colored" });
+      localStorage.removeItem("applicant_id");
+      navigate("/applicants");
     },
     onError: (error) => {
       toast.error("Something went wrong", { theme: "colored" });
     },
   });
-
-  const labelStyles = {
-    mt: "2",
-    ml: "-2.5",
-    fontSize: "sm",
-  };
+  const IDsMutation = useMutation((data) => setIDs(data), {
+    onSuccess: (data) => {
+      fingerprintMutation.mutate({
+        owner: data.id,
+        fingerprint_data: finger_data.template1,
+        fingerprint_img: finger_data.img1,
+      });
+    },
+  });
 
   const columns = [
     "Full_name",
@@ -147,7 +158,7 @@ const ProcessPage = () => {
     <div className=" ">
       <div className="bg-slate-200 h-[48px] my-10 flex items-center justify-between">
         <h3 className="text-2xl font-medium my-6 py-2 px-3">Processing</h3>
-        <div className="flex px-10">
+        <div className="flex px-1">
           <button
             disabled={!image.id}
             onClick={() => {
@@ -158,7 +169,7 @@ const ProcessPage = () => {
                 status: "Pending",
               });
             }}
-            className="bg-blue-500 rounded text white px-2 py-2"
+            className="bg-blue-500 rounded text-white px-2 py-2"
           >
             Save data
           </button>
@@ -203,14 +214,15 @@ const ProcessPage = () => {
           </div>
 
           <div className="w-full flex flex-col items-center justify-center">
-            {(index == 2 || index == 3) && finger_data[`quality${index}`] ? (
+            {(index == 2 || index == 3) &&
+            finger_data[`quality${index - 1}`] ? (
               <Box className="w-24" pt={6} pb={2}>
                 <Slider aria-label="slider-ex-6" disabled>
                   <SliderMark
-                    value={finger_data[`quality${index}`]}
+                    value={finger_data[`quality${index - 1}`]}
                     textAlign="center"
                     bg={
-                      finger_data[`quality${index}`] < 60
+                      finger_data[`quality${index - 1}`] < 60
                         ? "red.500"
                         : "blue.500"
                     }
@@ -219,7 +231,7 @@ const ProcessPage = () => {
                     ml="-5"
                     w="12"
                   >
-                    {finger_data[`quality${index}`]}%
+                    {finger_data[`quality${index - 1}`]}%
                   </SliderMark>
                   <SliderTrack>
                     <SliderFilledTrack />
@@ -245,10 +257,11 @@ const ProcessPage = () => {
                   src={"http://127.0.0.1:8000/" + image.image}
                   alt=""
                 />
-              ) : index == 2 && finger_data[`img${index}`] ? (
+              ) : (index == 2 || index == 3) &&
+                finger_data[`img${index - 1}`] ? (
                 <img
                   className="w-full h-full"
-                  src={finger_data[`img${index}`]}
+                  src={finger_data[`img${index - 1}`]}
                   alt=""
                 />
               ) : (
@@ -259,11 +272,11 @@ const ProcessPage = () => {
               onClick={() => {
                 index == 1
                   ? capture()
-                  : index == 2
-                  ? CallSGIFPGetData(index, setFinger_data)
+                  : index == 2 || index == 3
+                  ? CallSGIFPGetData(index - 1, setFinger_data)
                   : "";
               }}
-              className="bg-slate-700 mt-3 px-5 py-2 w-20 rounded text-white"
+              className="bg-slate-700 mt-3 px-5 py-2 w-28 rounded text-white"
             >
               Scan
             </button>

@@ -114,8 +114,9 @@ const CustomTable = ({ columns, data, lists, setModal_data }) => {
                         <button
                           onClick={() => {
                             setModal_data(row);
+                            lists.onclick();
                           }}
-                          className="px-5 py-2 flex items-center text-white rounded bg-blue-500"
+                          className="px-5 w-28 py-2 flex items-center text-white rounded bg-blue-500"
                         >
                           <span>{lists.icon}</span>
                           {lists.title}

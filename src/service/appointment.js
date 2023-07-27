@@ -5,7 +5,7 @@ const application_endpoint = "pre/applications/";
 
 export const getAppointments = async (pageParam = 1, date) => {
   const { data } = await apiClient.get(
-    `${appointment_endpointment}?page=${pageParam}&date=${date}&applicant__status=Booked&center=&ordering=date`
+    `${appointment_endpointment}?page=${pageParam}&date=${date}&applicant__status=Booked&center=&ordering=date&applicant__stage=1`
   );
 
   return data;

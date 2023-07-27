@@ -8,6 +8,8 @@ import DevicePage from "./pages/Device";
 import ApplicantPage from "./pages/Applicant";
 import ProcessPage from "./pages/Process";
 import UsersPage from "./pages/Users";
+import UnapprovedPage from "./pages/UnapprovedIDs";
+import ApprovedPage from "./pages/ApprovedIDs";
 
 const App = () => {
   return (
@@ -20,6 +22,8 @@ const App = () => {
           <Route path="/applicants" element={<ApplicantPage />} />
           <Route path="/processing" element={<ProcessPage />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="/unapproved_ids" element={<UnapprovedPage />} />
+          <Route path="/approved_ids" element={<ApprovedPage />} />
         </Route>
         <Route path="login" element={<LoginPage />} />
       </Routes>

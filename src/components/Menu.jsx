@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { menu } from "../components/common/menus";
+import fingerprint from "/fingerprint.png";
 
 const Menu = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -61,7 +62,14 @@ const Menu = () => {
 
   return (
     <div className="navbar-container fixed top-0 left-0 h-screen w-[17%] bg-slate-700 text-white overflow-y-auto">
-      <nav className="h-full py-4 px-6">
+      <nav className="h-full pt-1 px-6">
+        <div className="w-full flex justify-center items-center gap-x-4">
+          <img className="w-14 " src={fingerprint} alt="" />
+          <div>
+            <p className="m-0 p-0">National ID</p>
+            <p className="m-0 p-0">System</p>
+          </div>
+        </div>
         <ul className="mt-7">
           {/* Your menu items rendering code */}
           {menuItems.map((menuItem, index) => renderMenuItem(menuItem, index))}

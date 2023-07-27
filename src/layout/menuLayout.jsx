@@ -3,11 +3,13 @@ import Menu from "../components/Menu";
 import ProfileHeader from "../components/profileHeader";
 import { Outlet } from "react-router-dom";
 
+
 const MenuLayout = () => {
   return (
-    <div className="w-screen ">
+    <div className="w-screen font-poppins">
       <div className="flex ">
         <div className="w-[17%]">
+          
           <Menu />
         </div>
 

@@ -8,7 +8,7 @@ const ProfileHeader = () => {
     queryKey: ["me"],
     queryFn: get_me,
   });
-  console.log("daaaaaata", data);
+
   return (
     <div className=" h-16 bg-slate-300 w-full flex  items-center">
       <div className="w-full">
@@ -17,7 +17,9 @@ const ProfileHeader = () => {
             <BiSolidUser />
           </button>
           <p className="font-medium ml-3 text-green-600">
-            hello <span className="text-black font-normal">{data?.first_name}</span> 👋🏿
+            hello{" "}
+            <span className="text-black font-normal">{data?.first_name}</span>{" "}
+            👋🏿
           </p>
         </div>
       </div>

@@ -10,13 +10,14 @@ import ProcessPage from "./pages/Process";
 import UsersPage from "./pages/Users";
 import UnapprovedPage from "./pages/UnapprovedIDs";
 import ApprovedPage from "./pages/ApprovedIDs";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   return (
     <>
       <Routes>
         <Route path="" element={<MenuLayout />}>
-          <Route index element={<Home />} />
+          <Route index element={<Dashboard />} />
           <Route path="/centers" element={<CenterPage />} />
           <Route path="/devices" element={<DevicePage />} />
           <Route path="/applicants" element={<ApplicantPage />} />

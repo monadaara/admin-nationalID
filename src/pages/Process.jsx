@@ -30,8 +30,9 @@ const ProcessPage = () => {
   const { applicant_data, setApplicant_data } = useState();
   const webcamRef = useRef(null);
   const navigate = useNavigate();
-  const [modalShow, setModalShow] = useState(false);
   const [image, setImage] = useState({ image: "", id: "" });
+  const [closeModel, setCloseModel] = useState(false);
+  const [matchScore, setMatchScore] = useState("");
   const [finger_data, setFinger_data] = useState({
     template1: "",
     template2: "",
@@ -43,7 +44,6 @@ const ProcessPage = () => {
   const [acknow_id, setAcknow_id] = useState("");
   const [acknowModel, setAcknowModel] = useState(false);
   const [index, setIndex] = useState(0);
-  const [sliderValue, setSliderValue] = useState(50);
 
   const applicant_id = localStorage.getItem("applicant_id");
 
@@ -52,24 +52,18 @@ const ProcessPage = () => {
     queryFn: () => getAplicant(applicant_id),
   });
   const { data: acknowlegement, isLoading } = useQuery({
-    queryKey: ["acknowlegement", applicant_id],
+    queryKey: ["acknowlegement", acknow_id],
     queryFn: () => getAcknowledgement(acknow_id),
     enabled: !!acknow_id,
   });
 
+  console.log("fngerdata", finger_data, index);
   const imageMutation = useMutation((data) => removeBg(data), {
     onSuccess: (data) => {
       setImage({ image: data.image, id: data.id });
-      setModalShow(false);
     },
   });
   const fingerprintMutation = useMutation((data) => set_fingerprint(data), {
-    onSuccess: (data) => {
-      setAcknow_id(data?.qrcode?.id);
-      toast.success("Seccessfully, registered", { theme: "colored" });
-      localStorage.removeItem("applicant_id");
-      navigate("/applicants");
-    },
     onError: (error) => {
       toast.error("Something went wrong", { theme: "colored" });
     },
@@ -78,9 +72,26 @@ const ProcessPage = () => {
     onSuccess: (data) => {
       fingerprintMutation.mutate({
         owner: data.id,
+        finger_name: "thumb",
         fingerprint_data: finger_data.template1,
         fingerprint_img: finger_data.img1,
       });
+      fingerprintMutation.mutate(
+        {
+          owner: data.id,
+          finger_name: "thumb",
+          fingerprint_data: finger_data.template2,
+          fingerprint_img: finger_data.img2,
+        },
+        {
+          onSuccess: (finger) => {
+            setAcknow_id(data?.qrcode?.id);
+            toast.success("Seccessfully, registered", { theme: "colored" });
+            // localStorage.removeItem("applicant_id");
+            // navigate("/applicants");
+          },
+        }
+      );
     },
   });
 
@@ -154,6 +165,22 @@ const ProcessPage = () => {
     img.src = imageSrc;
   };
 
+  useEffect(() => {
+    if (matchScore && matchScore > 100) {
+      toast.error("Biometric allready registered", { theme: "colored" });
+      localStorage.removeItem("applicant_id");
+      navigate("/applicants");
+    }
+  }, [matchScore]);
+
+  useEffect(() => {
+    if (closeModel) {
+      setTimeout(() => {
+        localStorage.removeItem("applicant_id");
+        navigate("/applicants");
+      }, 300);
+    }
+  }, []);
   return (
     <div className=" ">
       <div className="bg-slate-200 h-[48px] my-10 flex items-center justify-between">
@@ -273,7 +300,7 @@ const ProcessPage = () => {
                 index == 1
                   ? capture()
                   : index == 2 || index == 3
-                  ? CallSGIFPGetData(index - 1, setFinger_data)
+                  ? CallSGIFPGetData(index - 1, setFinger_data, setMatchScore)
                   : "";
               }}
               className="bg-slate-700 mt-3 px-5 py-2 w-28 rounded text-white"
@@ -284,32 +311,15 @@ const ProcessPage = () => {
         </section>
       </div>
 
-      {/* <DeviceModal
-        centers={centers}
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        register={register}
-        setValue={setValue}
-        handleSubmit={handleSubmit}
-        errors={errors}
-        is_updating={is_updating}
-        deviceFields={deviceFields}
-        onSubmit={onSubmit}
-      /> */}
-
       {acknowlegement && !isLoading && (
         <AknowledgementModal
+          setCloseModel={setCloseModel}
           imageMutation={imageMutation}
           onHide={() => setAcknowModel(false)}
           show={acknowModel}
           data={acknowlegement}
         />
       )}
-      <PictureModel
-        imageMutation={imageMutation}
-        onHide={() => setModalShow(false)}
-        show={modalShow}
-      />
     </div>
   );
 };

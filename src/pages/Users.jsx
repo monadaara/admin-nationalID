@@ -87,7 +87,7 @@ const UsersPage = () => {
   const usersFilteredByName =
     usersFilter.name &&
     data?.filter((device) =>
-      device.name.toLowerCase().includes(usersFilter.name.toLowerCase())
+      device.first_name.toLowerCase().includes(usersFilter.name.toLowerCase())
     );
 
   const usersFilteredByStatus =
@@ -100,6 +100,8 @@ const UsersPage = () => {
       ? data
       : data?.filter((device) => device.center?.id == usersFilter.center);
 
+ 
+
   let usersData = usersFilter.name
     ? usersFilteredByName
     : usersFilter.status
@@ -107,6 +109,8 @@ const UsersPage = () => {
     : usersFilter.center
     ? usersFilteredByCenter
     : data;
+
+  
 
   const users = usersData?.map((user) => {
     return {

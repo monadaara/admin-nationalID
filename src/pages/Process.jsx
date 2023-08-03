@@ -8,9 +8,12 @@ import { FaRegUser, FaRegHandPaper } from "react-icons/fa";
 import PictureModel from "../models/PictureModel";
 import {
   getAcknowledgement,
+  get_fingerprint_data,
   removeBg,
   setIDs,
   set_fingerprint,
+  updateApplicantImg,
+  update_fingerprint,
 } from "../service/processing";
 import DeviceModal from "../models/DeviceModal";
 import { toast } from "react-toastify";
@@ -25,14 +28,17 @@ import {
   SliderMark,
   Box,
 } from "@chakra-ui/react";
+import Applicant from "../components/Applicant";
 
 const ProcessPage = () => {
-  const { applicant_data, setApplicant_data } = useState();
+  const [applicant_data, setApplicant_data] = useState();
   const webcamRef = useRef(null);
   const navigate = useNavigate();
-  const [image, setImage] = useState({ image: "", id: "" });
+  const [image, setImage] = useState({ image: "" });
   const [closeModel, setCloseModel] = useState(false);
   const [matchScore, setMatchScore] = useState("");
+  const [showEdit, setShowEdit] = useState(false);
+  const [hasDocument, setHasDocument] = useState(true);
   const [finger_data, setFinger_data] = useState({
     template1: "",
     template2: "",
@@ -46,9 +52,10 @@ const ProcessPage = () => {
   const [index, setIndex] = useState(0);
 
   const applicant_id = localStorage.getItem("applicant_id");
+  const is_lost = localStorage.getItem("is_lost");
 
-  const { data } = useQuery({
-    queryKey: ["applicant", applicant_id],
+  const { data, isLoading: dataIsLoading } = useQuery({
+    queryKey: ["applicant", applicant_id, showEdit],
     queryFn: () => getAplicant(applicant_id),
   });
   const { data: acknowlegement, isLoading } = useQuery({
@@ -57,46 +64,29 @@ const ProcessPage = () => {
     enabled: !!acknow_id,
   });
 
-  console.log("fngerdata", finger_data, index);
-  const imageMutation = useMutation((data) => removeBg(data), {
-    onSuccess: (data) => {
-      setImage({ image: data.image, id: data.id });
-    },
+  const { data: fingerprint_data } = useQuery({
+    queryKey: ["fingerprints"],
+    queryFn: get_fingerprint_data,
   });
+  const imageMutation = useMutation((data) => removeBg(data));
+  const updateImageMutation = useMutation((data) => updateApplicantImg(data));
   const fingerprintMutation = useMutation((data) => set_fingerprint(data), {
     onError: (error) => {
       toast.error("Something went wrong", { theme: "colored" });
     },
   });
-  const IDsMutation = useMutation((data) => setIDs(data), {
-    onSuccess: (data) => {
-      fingerprintMutation.mutate({
-        owner: data.id,
-        finger_name: "thumb",
-        fingerprint_data: finger_data.template1,
-        fingerprint_img: finger_data.img1,
-      });
-      fingerprintMutation.mutate(
-        {
-          owner: data.id,
-          finger_name: "thumb",
-          fingerprint_data: finger_data.template2,
-          fingerprint_img: finger_data.img2,
-        },
-        {
-          onSuccess: (finger) => {
-            setAcknow_id(data?.qrcode?.id);
-            toast.success("Seccessfully, registered", { theme: "colored" });
-            // localStorage.removeItem("applicant_id");
-            // navigate("/applicants");
-          },
-        }
-      );
-    },
-  });
+  const updateFingerprintMutation = useMutation(
+    (data) => update_fingerprint(data),
+    {
+      onError: (error) => {
+        toast.error("Something went wrong", { theme: "colored" });
+      },
+    }
+  );
 
   const columns = [
     "Full_name",
+    "Mother",
     "Age",
     "Birth_city",
     "Birth_country",
@@ -115,13 +105,16 @@ const ProcessPage = () => {
 
   const lists = {
     title: "Edit",
+    onclick: () => setShowEdit(true),
     icon: <BsPlus />,
   };
+  let viewDocument = "";
 
   const applicants = [
     {
       Full_name: `${data?.first_name} ${data?.middle_name} ${data?.last_name}`,
       Age: data?.age,
+      Mother: `${data?.mother_first_name} ${data?.mother_middle_name} ${data?.mother_last_name}`,
       Birth_city: data?.birth_city,
       Birth_country: data?.birth_country,
       Birth_region: data?.birth_region,
@@ -145,56 +138,120 @@ const ProcessPage = () => {
     }
   }, [acknowlegement]);
 
+  console.log("fingerprint_data", fingerprint_data);
+
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    // Do something with the captured image
 
-    // Resize the captured image to national ID size
-    const canvas = document.createElement("canvas");
-    canvas.width = 600; // Width in pixels for the national ID size
-    canvas.height = 400; // Height in pixels for the national ID size
-    const ctx = canvas.getContext("2d");
-
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const resizedImageSrc = canvas.toDataURL("image/jpeg");
-
-      imageMutation.mutate(resizedImageSrc);
-    };
-    img.src = imageSrc;
+    setImage({ image: imageSrc });
+    // console.log("image", imageSrc);
   };
 
   useEffect(() => {
     if (matchScore && matchScore > 100) {
-      toast.error("Biometric allready registered", { theme: "colored" });
+      toast.error("Biometric already registered", { theme: "colored" });
       localStorage.removeItem("applicant_id");
+      localStorage.removeItem("is_lost");
       navigate("/applicants");
     }
   }, [matchScore]);
+
+
+  console.log("matchScore",matchScore)
 
   useEffect(() => {
     if (closeModel) {
       setTimeout(() => {
         localStorage.removeItem("applicant_id");
+        localStorage.removeItem("is_lost");
         navigate("/applicants");
       }, 300);
     }
-  }, []);
+
+    data?.document ? setHasDocument(true) : setHasDocument(false);
+  }, [dataIsLoading]);
+
+  data?.document
+    ? (viewDocument = {
+        title: "view Doc",
+        onclick: (newPageUrl) => window.open(newPageUrl, "_blank"),
+        icon: <BsPlus />,
+      })
+    : "";
+  // console.log("viewDocument", viewDocument);
+
+  // console.log("finger", finger_data);
   return (
     <div className=" ">
       <div className="bg-slate-200 h-[48px] my-10 flex items-center justify-between">
         <h3 className="text-2xl font-medium my-6 py-2 px-3">Processing</h3>
         <div className="flex px-1">
           <button
-            disabled={!image.id}
+            disabled={
+              !hasDocument ||
+              !image.image ||
+              !finger_data.img1 ||
+              !finger_data.img2
+            }
             onClick={() => {
-              IDsMutation.mutate({
-                ...data,
-                address: data.address.id,
-                image: image.id,
-                status: "Pending",
-              });
+              if (!is_lost) {
+                imageMutation.mutate({
+                  image: image.image,
+                  id: data.id,
+                });
+                fingerprintMutation.mutate({
+                  owner: data.id,
+                  finger_name: "thumb",
+                  fingerprint_data: finger_data.template1,
+                  fingerprint_img: finger_data.img1,
+                });
+                fingerprintMutation.mutate(
+                  {
+                    owner: data.id,
+                    finger_name: "thumb",
+                    fingerprint_data: finger_data.template2,
+                    fingerprint_img: finger_data.img2,
+                  },
+                  {
+                    onSuccess: (finger) => {
+                      setAcknow_id(data.id);
+                      toast.success("biometric registered.", {
+                        theme: "colored",
+                      });
+                    },
+                  }
+                );
+              } else {
+                updateImageMutation.mutate({
+                  image: image.image,
+                  id: data.image.id,
+                  applicant_id: data.id,
+                });
+                updateFingerprintMutation.mutate({
+                  owner: data.id,
+                  id: data.fingerprint_template[0].id,
+                  finger_name: "thumb",
+                  fingerprint_data: finger_data.template1,
+                  fingerprint_img: finger_data.img1,
+                });
+                updateFingerprintMutation.mutate(
+                  {
+                    owner: data.id,
+                    id: data.fingerprint_template[1].id,
+                    finger_name: "thumb",
+                    fingerprint_data: finger_data.template2,
+                    fingerprint_img: finger_data.img2,
+                  },
+                  {
+                    onSuccess: (finger) => {
+                      setAcknow_id(data.id);
+                      toast.success("biometric registered.", {
+                        theme: "colored",
+                      });
+                    },
+                  }
+                );
+              }
             }}
             className="bg-blue-500 rounded text-white px-2 py-2"
           >
@@ -203,12 +260,29 @@ const ProcessPage = () => {
         </div>
       </div>
 
-      <CustomTable
-        setModal_data={setApplicant_data}
-        columns={columns}
-        data={applicants}
-        lists={lists}
-      />
+      {!showEdit ? (
+        <CustomTable
+          setModal_data={setApplicant_data}
+          columns={columns}
+          data={applicants}
+          lists={lists}
+          viewDocument={viewDocument}
+        />
+      ) : (
+        ""
+      )}
+
+      {showEdit && !dataIsLoading ? (
+        <Applicant
+          data={data}
+          hasDocument={hasDocument}
+          setHasDocument={setHasDocument}
+          showEdit={showEdit}
+          setShowEdit={setShowEdit}
+        />
+      ) : (
+        ""
+      )}
 
       <div className="mt-10">
         <h1 className="font-medium text-2xl border-b border-slate-400">
@@ -275,19 +349,25 @@ const ProcessPage = () => {
                   className="w-full h-full"
                   audio={false}
                   ref={webcamRef}
+                  mirrored={true} // If you want to mirror the webcam feed
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
                   screenshotFormat="image/jpeg"
                 />
               )}
               {index == 1 && image.image ? (
                 <img
-                  className="w-full h-full"
-                  src={"http://127.0.0.1:8000/" + image.image}
+                  className="w-full h-full object-cover"
+                  src={image.image}
                   alt=""
                 />
               ) : (index == 2 || index == 3) &&
                 finger_data[`img${index - 1}`] ? (
                 <img
-                  className="w-full h-full"
+                  className="w-full h-full "
                   src={finger_data[`img${index - 1}`]}
                   alt=""
                 />
@@ -299,8 +379,22 @@ const ProcessPage = () => {
               onClick={() => {
                 index == 1
                   ? capture()
+                  : is_lost
+                  ? CallSGIFPGetData(
+                      index - 1,
+                      setFinger_data,
+                      setMatchScore,
+                      fingerprint_data,
+                      false,
+                      true
+                    )
                   : index == 2 || index == 3
-                  ? CallSGIFPGetData(index - 1, setFinger_data, setMatchScore)
+                  ? CallSGIFPGetData(
+                      index - 1,
+                      setFinger_data,
+                      setMatchScore,
+                      fingerprint_data
+                    )
                   : "";
               }}
               className="bg-slate-700 mt-3 px-5 py-2 w-28 rounded text-white"
@@ -314,10 +408,14 @@ const ProcessPage = () => {
       {acknowlegement && !isLoading && (
         <AknowledgementModal
           setCloseModel={setCloseModel}
-          imageMutation={imageMutation}
-          onHide={() => setAcknowModel(false)}
+          onHide={() => {
+            setAcknowModel(false);
+            localStorage.removeItem("applicant_id");
+            localStorage.removeItem("is_lost");
+            navigate("/applicants");
+          }}
           show={acknowModel}
-          data={acknowlegement}
+          data={acknowlegement[0]}
         />
       )}
     </div>

@@ -47,11 +47,9 @@ const UsersFilter = ({
           py={2}
           px={2}
           pl="10"
-          value={usersFilter.status}
+          value={usersFilter.status ? usersFilter.status : "all"}
           ml={2} // Add margin for spacing
-          onChange={(e) =>
-            setUsersFilter({ status: e.target.value, center: "all" })
-          }
+          onChange={(e) => setUsersFilter({ status: e.target.value })}
         >
           <option value="all">All</option>
           <option value="active">Active</option>
@@ -64,12 +62,10 @@ const UsersFilter = ({
           borderRadius="md"
           py={2}
           px={2}
-          value={usersFilter.center}
+          value={usersFilter.center ? usersFilter.center : "all"}
           pl="10"
           ml={2} // Add margin for spacing
-          onChange={(e) =>
-            setUsersFilter({ center: e.target.value, status: "all" })
-          }
+          onChange={(e) => setUsersFilter({ center: e.target.value })}
         >
           <option value="all">All</option>
           {centers?.map((center) => (

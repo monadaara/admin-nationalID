@@ -88,15 +88,15 @@ const PdfInstance = ({ data }) => {
               </Text>
               <Text>
                 <Text className="font-medium">Transaction id: </Text>
-                {data.ids?.transaction_code}
+                {data.applicant?.transaction_code}
               </Text>
               <Text style={styles.text}>
                 <Text className="font-medium">Full Name: </Text>
-                {`${data.ids.first_name} ${data.ids.middle_name} ${data.ids.last_name}`}
+                {`${data.applicant.first_name} ${data.applicant.middle_name} ${data.applicant.last_name}`}
               </Text>
             </View>
             <View style={styles.imageContainer}>
-              <Image style={styles.image} src={data.ids.image.image} />
+              <Image style={styles.image} src={data.applicant.image.image} />
             </View>
           </View>
           <View style={{ textAlign: "center", marginTop: 16 }}>
@@ -134,20 +134,24 @@ const AknowledgementModal = ({ onHide, show, data, setCloseModel }) => {
               </p>
               <p className="mb-2">
                 <strong>Transaction id: </strong>
-                {data.ids?.transaction_code}
+                {data.applicant?.transaction_code}
               </p>
               <p className="mb-2">
                 <strong>Full Name: </strong>
-                {data.ids.first_name +
+                {data.applicant.first_name +
                   " " +
-                  data.ids.middle_name +
+                  data.applicant.middle_name +
                   " " +
-                  data.ids.last_name}
+                  data.applicant.last_name}
               </p>
             </div>
 
             <div className="border border-slate-600">
-              <img className="w-32 h-24  " src={data.ids.image.image} alt="" />
+              <img
+                className="w-32 h-24  "
+                src={data.applicant.image.image}
+                alt=""
+              />
             </div>
           </section>
 

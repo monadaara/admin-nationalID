@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import {
   application_by_status,
   appointment_report,
+  pre_reg,
   top_center,
   weekly_report,
 } from "../service/dashboard";
@@ -82,6 +83,10 @@ const Dashboard = () => {
   const { data: chartData, isLoading: chartIsLoading } = useQuery({
     queryKey: ["top_center"],
     queryFn: top_center,
+  });
+  const { data: pre_reg_ids_auth } = useQuery({
+    queryKey: ["pre_reg_ids_auth"],
+    queryFn: pre_reg,
   });
 
   const labels = !isLoading && data?.map((item) => item.date);
@@ -182,31 +187,47 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-10 mt-10">
-      <div className="rounded-lg shadow-lg px-3 py-3">
-        <Line options={options} data={chartdata} />
+    <div className="mt-10">
+      <div className="grid grid-cols-3 gap-10 mb-3">
+        <div className="shadow-lg rounded-md px-4 py-3 border text-center">
+          <h3 className="font-medium text-1xl">Pre-registration</h3>
+          <h1 className="font-medium text-2xl">{pre_reg_ids_auth?.app_count}</h1>
+        </div>
+        <div className="shadow-lg rounded-md border px-4 py-3 text-center">
+          <h3 className="font-medium text-1xl">New IDs issued</h3>
+          <h1 className="font-medium text-2xl">{pre_reg_ids_auth?.ids_count}</h1>
+        </div>
+        <div className="shadow-lg rounded-md border px-4 py-3 text-center">
+          <h3 className="font-medium text-1xl">Authentications</h3>
+          <h1 className="font-medium text-2xl">{pre_reg_ids_auth?.user_count}</h1>
+        </div>
       </div>
-      <div className="rounded-lg shadow-lg px-3 py-3">
-        <Bar options={baroptions} data={bardata} />
-      </div>
-      <div className="rounded-lg shadow-lg px-3 py-3">
-        <Pie
-          options={{
-            plugins: {
-              legend: {
-                position: "top",
+      <div className="grid grid-cols-2 gap-10 ">
+        <div className="rounded-lg shadow-lg px-3 py-3">
+          <Line options={options} data={chartdata} />
+        </div>
+        <div className="rounded-lg shadow-lg px-3 py-3">
+          <Bar options={baroptions} data={bardata} />
+        </div>
+        <div className="rounded-lg shadow-lg px-3 py-3">
+          <Pie
+            options={{
+              plugins: {
+                legend: {
+                  position: "top",
+                },
+                title: {
+                  display: true,
+                  text: "Appointment Status",
+                },
               },
-              title: {
-                display: true,
-                text: "Appointment Status",
-              },
-            },
-          }}
-          data={pieChartData}
-        />
-      </div>
-      <div className="rounded-lg shadow-lg px-3 py-3">
-        <Bar data={chartDataConfig} options={chartOptions} />
+            }}
+            data={pieChartData}
+          />
+        </div>
+        <div className="rounded-lg shadow-lg px-3 py-3">
+          <Bar data={chartDataConfig} options={chartOptions} />
+        </div>
       </div>
     </div>
   );

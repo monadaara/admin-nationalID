@@ -16,3 +16,7 @@ export const top_center = async () => {
   const { data } = await apiClient.get("core/top_centers_reports");
   return data;
 };
+export const pre_reg = async () => {
+  const { data } = await apiClient.get("pre/pre_reg_ids_auth");
+  return data;
+};

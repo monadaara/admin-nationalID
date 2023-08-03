@@ -7,6 +7,9 @@ import {
   FaLayerGroup,
 } from "react-icons/fa";
 import { BsFingerprint } from "react-icons/bs";
+import { TbFingerprintOff,TbReportSearch } from "react-icons/tb";
+import { BiSolidUserDetail } from "react-icons/bi";
+import { FaUsers } from "react-icons/fa";
 
 export const menu = [
   {
@@ -62,10 +65,18 @@ export const menu = [
     children: [],
     isOpen: false,
   },
+  {
+    id: "c3",
+    icon: TbFingerprintOff,
+    title: "Lost IDs",
+    link: "/lost_id",
+    children: [],
+    isOpen: false,
+  },
 
   {
     id: 3,
-    icon: FaHome,
+    icon: FaUsers,
     title: "Users",
     link: "/users",
     children: [],
@@ -73,10 +84,17 @@ export const menu = [
   },
   {
     id: 3,
-    icon: FaHome,
+    icon: TbReportSearch,
     title: "Reports",
     link: "#",
-    children: [],
+    children: [
+      {
+        id: "c2",
+        icon: BiSolidUserDetail,
+        title: "Centers by users",
+        link: "/center_by_user_appointement",
+      },
+    ],
     isOpen: false,
   },
 ];

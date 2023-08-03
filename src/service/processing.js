@@ -1,35 +1,37 @@
 import apiClient from "./api-client";
 
-const acknowledgement_endpoint = "acknowledgement/";
+const acknowledgement_endpoint = "pre/acknowledgement/";
 const ids_endpoint = "ids/";
-const fingerprint_endpoint = "fingerprint-templates/";
+const fingerprint_endpoint = "pre/fingerprint-templates/";
 
-export const removeBg = async (image) => {
-  // Remove the 'data:image/jpeg;base64,' prefix from the base64 data
-  const base64Data = image.split(",")[1];
-
-  // Convert the base64 data to binary
-  const binaryData = atob(base64Data);
-
-  // Create a Uint8Array from the binary data
-  const uint8Array = new Uint8Array(binaryData.length);
-  for (let i = 0; i < binaryData.length; i++) {
-    uint8Array[i] = binaryData.charCodeAt(i);
-  }
-
+export const removeBg = async (obj) => {
   // Send the binary data to your Django backend using FormData
   const formData = new FormData();
-  formData.append("image", new Blob([uint8Array], { type: "image/jpeg" }));
+  formData.append("image", obj.image);
+  formData.append("applicant", obj.id);
 
-  const { data } = await apiClient.post("image/", formData, {
+  const { data } = await apiClient.post("pre/image/", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return data;
+};
+export const updateApplicantImg = async (obj) => {
+  const formData = new FormData();
+  formData.append("image", obj.image);
+  formData.append("applicant", obj.applicant_id);
+
+  const { data } = await apiClient.put("pre/image/" + obj.id + "/", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
   return data;
 };
 
-export const getAcknowledgement = async (id) => {
-  const { data } = await apiClient.get(`${acknowledgement_endpoint}${id}`);
+export const getAcknowledgement = async (applicant_id) => {
+  const { data } = await apiClient.get(
+    `${acknowledgement_endpoint}?applicant__id=${applicant_id}`
+  );
 
   return data;
 };
@@ -40,9 +42,15 @@ export const setIDs = async (data) => {
 };
 
 export const get_nationalID = async (page, code, name, approve) => {
-  console.log("pa", page, code, name);
   const { data } = await apiClient.get(
-    `${ids_endpoint}?page=${page}&approved=${approve}&transaction_code=${code}&first_name__icontains=${name}`
+    `${ids_endpoint}?page=${page}&applicant__approved=${approve}&applicant__transaction_code=${code}&applicant__first_name__icontains=${name}`
+  );
+  return data;
+};
+
+export const get_nationalIDByFingerprint = async (id) => {
+  const { data } = await apiClient.get(
+    `${ids_endpoint}?applicant__fingerprint_template__id=${id}`
   );
   return data;
 };
@@ -58,20 +66,11 @@ export const update_nationalId = async (data) => {
 // fingerdata
 
 export const set_fingerprint = async (data) => {
-  const base64Data = data.fingerprint_img.split(",")[1];
-  const binaryData = atob(base64Data);
-  const uint8Array = new Uint8Array(binaryData.length);
-  for (let i = 0; i < binaryData.length; i++) {
-    uint8Array[i] = binaryData.charCodeAt(i);
-  }
   const formData = new FormData();
-  formData.append(
-    "fingerprint_img",
-    new Blob([uint8Array], { type: "image/jpeg" })
-  );
-
+  formData.append("fingerprint_img", data.fingerprint_img);
   formData.append("fingerprint_data", data.fingerprint_data);
   formData.append("owner", data.owner);
+  formData.append("finger_name", data.finger_name);
   const { data: fingerprint } = await apiClient.post(
     fingerprint_endpoint,
     formData,
@@ -80,4 +79,25 @@ export const set_fingerprint = async (data) => {
     }
   );
   return fingerprint;
+};
+
+export const update_fingerprint = async (data) => {
+  const formData = new FormData();
+  formData.append("fingerprint_img", data.fingerprint_img);
+  formData.append("fingerprint_data", data.fingerprint_data);
+  formData.append("owner", data.owner);
+  formData.append("finger_name", data.finger_name);
+  const { data: fingerprint } = await apiClient.put(
+    fingerprint_endpoint + data.id + "/",
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return fingerprint;
+};
+
+export const get_fingerprint_data = async () => {
+  const { data } = await apiClient.get(fingerprint_endpoint);
+  return data;
 };

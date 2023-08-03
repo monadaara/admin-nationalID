@@ -46,6 +46,7 @@ const ApprovedPage = () => {
 
   const columns = [
     "Full_name",
+    "Mother",
     "Age",
     "Birth_city",
     "Birth_country",
@@ -64,7 +65,7 @@ const ApprovedPage = () => {
   ];
   const lists = {
     icon: <BiShow />,
-    title: "View ID",
+    title: "View",
     onclick: () => {
       setModalShow(true);
     },
@@ -72,22 +73,24 @@ const ApprovedPage = () => {
 
   const applicants = data?.results?.map((data) => {
     return {
-      Full_name: `${data?.first_name} ${data?.middle_name} ${data?.last_name}`,
-      Age: data?.age,
-      Birth_city: data?.birth_city,
-      Birth_country: data?.birth_country,
-      Birth_region: data?.birth_region,
-      Blood_type: data?.blood_type,
-      Permanent_country: data?.address?.country,
-      Permanent_region: data?.address?.region,
-      Permanent_city: data?.address?.city,
-      Email: data?.address?.email,
-      Phone: data?.address?.phone,
-      Date_of_birth: data?.date_of_birth,
-      Marital_status: data?.marital_status,
-      Residence: data?.residence,
-      Sex: data?.sex,
-      Transaction_code: data.transaction_code,
+      Full_name: `${data?.applicant?.first_name} ${data?.applicant?.middle_name} ${data?.applicant?.last_name}`,
+
+      Age: data?.applicant?.age,
+      Mother: `${data?.applicant?.mother_first_name} ${data?.applicant?.mother_middle_name} ${data?.applicant?.mother_last_name}`,
+      Birth_city: data?.applicant?.birth_city,
+      Birth_country: data?.applicant?.birth_country,
+      Birth_region: data?.applicant?.birth_region,
+      Transaction_code: data?.applicant?.transaction_code,
+      Blood_type: data?.applicant?.blood_type,
+      Permanent_country: data?.applicant?.address?.country,
+      Permanent_region: data?.applicant?.address?.region,
+      Permanent_city: data?.applicant?.address?.city,
+      Email: data?.applicant?.address?.email,
+      Phone: data?.applicant?.address?.phone,
+      Date_of_birth: data?.applicant?.date_of_birth,
+      Marital_status: data?.applicant?.marital_status,
+      Residence: data?.applicant?.residence,
+      Sex: data?.applicant?.sex,
       ...data,
     };
   });

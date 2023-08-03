@@ -14,7 +14,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 
-const CustomTable = ({ columns, data, lists, setModal_data }) => {
+const CustomTable = ({ columns, data, lists, setModal_data, viewDocument }) => {
   const hasStatusColumn = columns.includes("Status");
 
   const getStatusColor = (status) => {
@@ -50,16 +50,18 @@ const CustomTable = ({ columns, data, lists, setModal_data }) => {
                     {column.replace(/_/g, " ")}
                   </Th>
                 ))}
-                <Th
-                  textTransform={"capitalize"}
-                  py={2}
-                  px={4}
-                  textAlign="left"
-                  color="gray.700"
-                  fontWeight="semibold"
-                >
-                  Actions
-                </Th>
+                {lists && (
+                  <Th
+                    textTransform={"capitalize"}
+                    py={2}
+                    px={4}
+                    textAlign="left"
+                    color="gray.700"
+                    fontWeight="semibold"
+                  >
+                    Actions
+                  </Th>
+                )}
               </Tr>
             </Thead>
             <Tbody>
@@ -110,17 +112,34 @@ const CustomTable = ({ columns, data, lists, setModal_data }) => {
                             ))}
                           </MenuList>
                         </Menu>
+                      ) : lists ? (
+                        <div className="flex gap-x-3">
+                          <button
+                            onClick={() => {
+                              setModal_data(row);
+                              lists.onclick(row);
+                            }}
+                            className="px-5 w-full py-2 flex items-center text-white rounded bg-blue-500 justify-center"
+                          >
+                            <span className="">{lists.icon}</span>
+                            {lists.title}
+                          </button>
+                          {viewDocument ? (
+                            <button
+                              onClick={() => {
+                                viewDocument.onclick(row.document.file);
+                              }}
+                              className="px-5 w-full py-2 flex items-center text-white rounded bg-blue-500"
+                            >
+                              <span>{viewDocument.icon}</span>
+                              {viewDocument.title}
+                            </button>
+                          ) : (
+                            ""
+                          )}
+                        </div>
                       ) : (
-                        <button
-                          onClick={() => {
-                            setModal_data(row);
-                            lists.onclick();
-                          }}
-                          className="px-5 w-32 py-2 flex items-center text-white rounded bg-blue-500"
-                        >
-                          <span>{lists.icon}</span>
-                          {lists.title}
-                        </button>
+                        ""
                       )}
                     </Td>
                   </Tr>

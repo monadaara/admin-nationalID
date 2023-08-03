@@ -17,6 +17,7 @@ const ApplicantPage = () => {
   const navigate = useNavigate();
   const [filterByDate, setfilterByDate] = React.useState("");
   const [page, setPage] = React.useState(1);
+
   const [appointmentFilter, setAppointmentFilter] = React.useState({
     status: "all",
     name: "",

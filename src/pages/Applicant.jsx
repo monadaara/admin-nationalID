@@ -83,7 +83,7 @@ const ApplicantPage = () => {
     }
   }, [appointment]);
 
-  console.log("appointmentfilter", appointmentFilter);
+  
   return (
     <div className="">
       <ApplicationFilter

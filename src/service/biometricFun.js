@@ -2,7 +2,6 @@ let secugen_lic = "";
 export function CallSGIFPGetData(
   index,
   setFinger_data,
-  setMatchScore,
   data,
   isLost = false,
   is_updaing = false
@@ -14,21 +13,15 @@ export function CallSGIFPGetData(
     if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
       let fpobject = JSON.parse(xmlhttp.responseText);
       // console.log("here is the first template: " , fpobject);
-      console.log("data", data);
-      if (!isLost) {
-        if (!is_updaing && data.length) {
-          data?.map((finger) =>
-            matchingfingers(fpobject.TemplateBase64, finger, setMatchScore)
-          );
-        }
+      // console.log("data", data);
 
-        setFinger_data((prev) => ({
-          ...prev,
-          [`img${index}`]: "data:image/bmp;base64," + fpobject.BMPBase64,
-          [`template${index}`]: fpobject.TemplateBase64,
-          [`quality${index}`]: fpobject.ImageQuality,
-        }));
-      }
+      setFinger_data((prev) => ({
+        ...prev,
+        [`img${index}`]: "data:image/bmp;base64," + fpobject.BMPBase64,
+        [`template${index}`]: fpobject.TemplateBase64,
+        [`quality${index}`]: fpobject.ImageQuality,
+      }));
+
       if (isLost) {
         data?.map((finger) =>
           matchingfingers(fpobject.TemplateBase64, finger, setFinger_data, true)
@@ -59,7 +52,6 @@ function matchingfingers(
   setMatchScore,
   is_lost = false
 ) {
-  console.log("heeeeeeeeeere");
   var uri = "https://localhost:8443/SGIMatchScore";
   var xmlhttp = new XMLHttpRequest();
 
@@ -83,6 +75,50 @@ function matchingfingers(
       // }
       // console.log("matching response::::: ", fpobjecttt);
       // callback(fpobjecttt); // Call the callback with the result
+    } else if (xmlhttp.status == 404) {
+      // console.log("EEEEEEEEEEEEEEE");
+      // failCall(xmlhttp.status);
+      // callback(0); // Call the callback with an error
+    }
+  };
+}
+
+export function matchingfinger_templates(
+  user_data,
+  fingerprint,
+  setMatchingTemplates
+) {
+  var uri = "https://localhost:8443/SGIMatchScore";
+  var xmlhttp = new XMLHttpRequest();
+
+  var params = "Timeout=" + "100000";
+  params += "&Template1=" + encodeURIComponent(user_data.fingerprint_data);
+  params += "&Template2=" + encodeURIComponent(fingerprint.fingerprint_data);
+
+  params += "&TemplateFormat=" + "ISO ";
+  xmlhttp.open("POST", uri, true);
+  xmlhttp.send(params);
+
+  xmlhttp.onreadystatechange = function () {
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+      var fpobjecttt = JSON.parse(xmlhttp.responseText);
+
+
+      console.log("fpobjectttfpobjecttt",fpobjecttt)
+      if (fpobjecttt.MatchingScore > 95) {
+        setMatchingTemplates((prev) => ({
+          ...prev,
+          abnormal: [...prev.abnormal, { tem1: user_data, tem2: fingerprint }],
+        }));
+      } else if (
+        fpobjecttt.MatchingScore < 95 &&
+        fpobjecttt.MatchingScore > 60
+      ) {
+        setMatchingTemplates((prev) => ({
+          ...prev,
+          normal: [...prev.normal, { tem1: user_data, tem2: fingerprint }],
+        }))
+      }
     } else if (xmlhttp.status == 404) {
       // console.log("EEEEEEEEEEEEEEE");
       // failCall(xmlhttp.status);

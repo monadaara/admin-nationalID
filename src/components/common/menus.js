@@ -7,9 +7,10 @@ import {
   FaLayerGroup,
 } from "react-icons/fa";
 import { BsFingerprint } from "react-icons/bs";
-import { TbFingerprintOff,TbReportSearch } from "react-icons/tb";
+import { TbFingerprintOff, TbReportSearch } from "react-icons/tb";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { FaUsers } from "react-icons/fa";
+import { MdBlurOff } from "react-icons/md";
 
 export const menu = [
   {
@@ -46,6 +47,14 @@ export const menu = [
     icon: FaHome,
     title: "Applicants",
     link: "/applicants",
+    children: [],
+    isOpen: false,
+  },
+  {
+    id: 3222,
+    icon: MdBlurOff,
+    title: "Suspected",
+    link: "/suspected",
     children: [],
     isOpen: false,
   },
@@ -92,7 +101,13 @@ export const menu = [
         id: "c2",
         icon: BiSolidUserDetail,
         title: "Centers by users",
-        link: "/center_by_user_appointement",
+        link: "/center_by_users",
+      },
+      {
+        id: "c2",
+        icon: BiSolidUserDetail,
+        title: "Centers by Appointments",
+        link: "/center_by_appointements",
       },
     ],
     isOpen: false,

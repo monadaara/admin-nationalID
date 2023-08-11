@@ -15,6 +15,8 @@ import { get_logged_user } from "./service/admin";
 import Review from "./pages/Review";
 import LostID from "./pages/LostID";
 import CenterReportPage from "./pages/CenterReport";
+import CenterAppointmentReportPage from "./pages/CenterByappointmentsReport";
+import SuspectedPage from "./pages/Suspected";
 
 const App = () => {
   const navigate = useNavigate();
@@ -38,13 +40,16 @@ const App = () => {
           <Route path="/unapproved_ids" element={<UnapprovedPage />} />
           <Route path="/approved_ids" element={<ApprovedPage />} />
           <Route path="/unapproved_ids/:id" element={<Review />} />
+          <Route path="/suspected" element={<SuspectedPage />} />
+          <Route path="/suspected/:id" element={<Review />} />
           <Route path="/lost_id" element={<LostID />} />
 
           {/* reports */}
 
+          <Route path="/center_by_users" element={<CenterReportPage />} />
           <Route
-            path="/center_by_user_appointement"
-            element={<CenterReportPage />}
+            path="/center_by_appointements"
+            element={<CenterAppointmentReportPage />}
           />
         </Route>
         <Route path="login" element={<LoginPage />} />

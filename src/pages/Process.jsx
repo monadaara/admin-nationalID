@@ -15,7 +15,6 @@ import {
   updateApplicantImg,
   update_fingerprint,
 } from "../service/processing";
-import DeviceModal from "../models/DeviceModal";
 import { toast } from "react-toastify";
 import AknowledgementModal from "../models/AknowledgementModel";
 import Webcam from "react-webcam";
@@ -36,7 +35,6 @@ const ProcessPage = () => {
   const navigate = useNavigate();
   const [image, setImage] = useState({ image: "" });
   const [closeModel, setCloseModel] = useState(false);
-  const [matchScore, setMatchScore] = useState("");
   const [showEdit, setShowEdit] = useState(false);
   const [hasDocument, setHasDocument] = useState(true);
   const [finger_data, setFinger_data] = useState({
@@ -64,10 +62,7 @@ const ProcessPage = () => {
     enabled: !!acknow_id,
   });
 
-  const { data: fingerprint_data } = useQuery({
-    queryKey: ["fingerprints"],
-    queryFn: get_fingerprint_data,
-  });
+  
   const imageMutation = useMutation((data) => removeBg(data));
   const updateImageMutation = useMutation((data) => updateApplicantImg(data));
   const fingerprintMutation = useMutation((data) => set_fingerprint(data), {
@@ -138,7 +133,7 @@ const ProcessPage = () => {
     }
   }, [acknowlegement]);
 
-  console.log("fingerprint_data", fingerprint_data);
+  
 
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -147,17 +142,17 @@ const ProcessPage = () => {
     // console.log("image", imageSrc);
   };
 
-  useEffect(() => {
-    if (matchScore && matchScore > 100) {
-      toast.error("Biometric already registered", { theme: "colored" });
-      localStorage.removeItem("applicant_id");
-      localStorage.removeItem("is_lost");
-      navigate("/applicants");
-    }
-  }, [matchScore]);
+  // useEffect(() => {
+  //   if (matchScore && matchScore > 100) {
+  //     toast.error("Biometric already registered", { theme: "colored" });
+  //     localStorage.removeItem("applicant_id");
+  //     localStorage.removeItem("is_lost");
+  //     navigate("/applicants");
+  //   }
+  // }, [matchScore]);
 
 
-  console.log("matchScore",matchScore)
+  // console.log("matchScore",matchScore)
 
   useEffect(() => {
     if (closeModel) {
@@ -178,9 +173,7 @@ const ProcessPage = () => {
         icon: <BsPlus />,
       })
     : "";
-  // console.log("viewDocument", viewDocument);
 
-  // console.log("finger", finger_data);
   return (
     <div className=" ">
       <div className="bg-slate-200 h-[48px] my-10 flex items-center justify-between">
@@ -383,8 +376,7 @@ const ProcessPage = () => {
                   ? CallSGIFPGetData(
                       index - 1,
                       setFinger_data,
-                      setMatchScore,
-                      fingerprint_data,
+                      "",
                       false,
                       true
                     )
@@ -392,8 +384,7 @@ const ProcessPage = () => {
                   ? CallSGIFPGetData(
                       index - 1,
                       setFinger_data,
-                      setMatchScore,
-                      fingerprint_data
+                      ""
                     )
                   : "";
               }}

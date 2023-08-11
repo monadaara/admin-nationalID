@@ -100,13 +100,14 @@ const Applicant = ({ data, hasDocument, setHasDocument, setShowEdit }) => {
       },
       {
         onSuccess: (data) => {
-          if (!hasDocument) {
+          if (submitted_data.file) {
             const formData = new FormData();
             formData.append("file", submitted_data.file[0]);
             formData.append("applicant", data.id);
             documentMutation.mutate(formData, {
               onSuccess: (data) => {},
             });
+            
           }
 
           toast.success("applicant data is updated.", { theme: "colored" });

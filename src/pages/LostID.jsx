@@ -23,7 +23,7 @@ const LostID = () => {
 
   const handleCapture = () => {
     setIsLaoding(true);
-    CallSGIFPGetData(0, setFingerprint, "", data, true);
+    CallSGIFPGetData(0, setFingerprint, data, true);
     setIsLaoding(false);
   };
 

@@ -83,10 +83,10 @@ export const set_fingerprint = async (data) => {
 
 export const update_fingerprint = async (data) => {
   const formData = new FormData();
-  formData.append("fingerprint_img", data.fingerprint_img);
   formData.append("fingerprint_data", data.fingerprint_data);
   formData.append("owner", data.owner);
   formData.append("finger_name", data.finger_name);
+  formData.append("fingerprint_img", data.fingerprint_img);
   const { data: fingerprint } = await apiClient.put(
     fingerprint_endpoint + data.id + "/",
     formData,
@@ -97,7 +97,7 @@ export const update_fingerprint = async (data) => {
   return fingerprint;
 };
 
-export const get_fingerprint_data = async () => {
-  const { data } = await apiClient.get(fingerprint_endpoint);
+export const get_fingerprint_data = async (is_suspected) => {
+  const { data } = await apiClient.get(fingerprint_endpoint+`?is_suspected=${is_suspected}`);
   return data;
 };

@@ -1,48 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 
 import CustomTable from "../components/common/Table";
 
-import { setDevice, updateDevice } from "../service/device";
-
-import { BsPlus } from "react-icons/bs";
-import moment from "moment/moment";
-import ApplicationFilter from "./../components/ApplicationFilter";
 import { useNavigate } from "react-router-dom";
-import { get_nationalID, update_nationalId } from "../service/processing";
 import IDsFilter from "../components/IDsFilter";
-import IDModal from "../models/IDModel";
 import { BiShow } from "react-icons/bi";
-import { toast } from "react-toastify";
-const ApprovedPage = () => {
+import { getAppointments } from "../service/appointment";
+
+const SuspectedPage = () => {
   const navigate = useNavigate();
-  const [filters, setfilters] = React.useState({
+  const [filters, setfilters] = useState({
     code: "",
     name: "",
   });
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
 
-  const [ModalShow, setModalShow] = React.useState(false);
-  const [idsData, setidsData] = React.useState({});
+  const [idsData, setidsData] = useState({});
 
-  const queryClient = useQueryClient();
-  const { isLoading, isError, error, data, isFetching, isPreviousData } =
-    useQuery(
-      ["ids", page, filters.code, filters.name],
-      () => get_nationalID(page, filters.code, filters.name, true),
-      {
-        keepPreviousData: true,
-      }
-    );
-
-  const idsMutation = useMutation((data) => update_nationalId(data), {
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(["ids", page, filters.code, filters.name]);
-      setModalShow(false);
-      toast.success("ID seccessfully approved", { theme: "colored" });
-    },
-  });
+  const { data, isPreviousData } = useQuery(
+    ["appointments", page, filters.code, filters.name],
+    () => getAppointments(page, "", filters.code, filters.name, 2, true),
+    {
+      keepPreviousData: true,
+    }
+  );
 
   const columns = [
     "Full_name",
@@ -63,11 +46,13 @@ const ApprovedPage = () => {
     "Phone",
     "Transaction_code",
   ];
+
   const lists = {
     icon: <BiShow />,
     title: "View",
-    onclick: () => {
-      setModalShow(true);
+    onclick: (row) => {
+      localStorage.setItem("is_suspected", true);
+      navigate(`${row.applicant.id}`);
     },
   };
 
@@ -90,12 +75,11 @@ const ApprovedPage = () => {
       Date_of_birth: data?.applicant?.date_of_birth,
       Marital_status: data?.applicant?.marital_status,
       Residence: data?.applicant?.residence,
-      Sex: data?.applicant?.sex == "m" ? "Male" : "Female",
+      Sex: data?.applicant?.sex,
+
       ...data,
     };
   });
-
-  useEffect(() => {}, [idsData]);
 
   return (
     <div className="">
@@ -103,7 +87,7 @@ const ApprovedPage = () => {
 
       <div className="bg-slate-200 h-[48px] mb-10 flex items-center justify-between">
         <h3 className="text-2xl font-medium my-6 py-2 px-3">
-          Approved ID cards
+          Suspected Applications
         </h3>
         <div className="flex px-10">
           <button
@@ -133,16 +117,8 @@ const ApprovedPage = () => {
         data={applicants}
         lists={lists}
       />
-
-      <IDModal
-        idsMutation={idsMutation}
-        show={ModalShow}
-        onHide={() => setModalShow(false)}
-        ids={idsData}
-        is_approve={true}
-      />
     </div>
   );
 };
 
-export default ApprovedPage;
+export default SuspectedPage;

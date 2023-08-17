@@ -43,7 +43,6 @@ const UserModal = ({
   userFields[6].options = options;
 
   if (is_updating) {
-    
     userFields = userFields.filter((field) => field.name !== "password");
     userFields[5].defaultValue = options.find(
       (option) => option.value === users_data.center?.id

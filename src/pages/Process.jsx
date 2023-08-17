@@ -51,6 +51,7 @@ const ProcessPage = () => {
 
   const applicant_id = localStorage.getItem("applicant_id");
   const is_lost = localStorage.getItem("is_lost");
+  const is_new = localStorage.getItem("is_new");
 
   const { data, isLoading: dataIsLoading } = useQuery({
     queryKey: ["applicant", applicant_id, showEdit],
@@ -62,7 +63,6 @@ const ProcessPage = () => {
     enabled: !!acknow_id,
   });
 
-  
   const imageMutation = useMutation((data) => removeBg(data));
   const updateImageMutation = useMutation((data) => updateApplicantImg(data));
   const fingerprintMutation = useMutation((data) => set_fingerprint(data), {
@@ -133,8 +133,6 @@ const ProcessPage = () => {
     }
   }, [acknowlegement]);
 
-  
-
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
 
@@ -151,7 +149,6 @@ const ProcessPage = () => {
   //   }
   // }, [matchScore]);
 
-
   // console.log("matchScore",matchScore)
 
   useEffect(() => {
@@ -159,6 +156,7 @@ const ProcessPage = () => {
       setTimeout(() => {
         localStorage.removeItem("applicant_id");
         localStorage.removeItem("is_lost");
+        if (is_new || is_lost) navigate("/approved_ids");
         navigate("/applicants");
       }, 300);
     }
@@ -258,7 +256,7 @@ const ProcessPage = () => {
           setModal_data={setApplicant_data}
           columns={columns}
           data={applicants}
-          lists={lists}
+          lists={is_new ? [] : lists}
           viewDocument={viewDocument}
         />
       ) : (
@@ -373,19 +371,9 @@ const ProcessPage = () => {
                 index == 1
                   ? capture()
                   : is_lost
-                  ? CallSGIFPGetData(
-                      index - 1,
-                      setFinger_data,
-                      "",
-                      false,
-                      true
-                    )
+                  ? CallSGIFPGetData(index - 1, setFinger_data, "", false, true)
                   : index == 2 || index == 3
-                  ? CallSGIFPGetData(
-                      index - 1,
-                      setFinger_data,
-                      ""
-                    )
+                  ? CallSGIFPGetData(index - 1, setFinger_data, "")
                   : "";
               }}
               className="bg-slate-700 mt-3 px-5 py-2 w-28 rounded text-white"
@@ -403,6 +391,8 @@ const ProcessPage = () => {
             setAcknowModel(false);
             localStorage.removeItem("applicant_id");
             localStorage.removeItem("is_lost");
+            localStorage.removeItem("is_new");
+            if (is_new || is_lost) navigate("/approved_ids");
             navigate("/applicants");
           }}
           show={acknowModel}

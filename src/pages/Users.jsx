@@ -148,6 +148,7 @@ const UsersPage = () => {
     resolver: joiResolver(is_updating ? userSchema : createUserSchema),
   });
 
+  console.log("heeeeeeeeeere",is_updating)
   const onSubmit = (data) => {
     if (is_updating) {
       updateUsersMutation.mutate(

@@ -10,7 +10,7 @@ import { joiPasswordExtendCore } from "joi-password";
 const joiPassword = Joi.extend(joiPasswordExtendCore);
 
 const schema = Joi.object({
-  username: Joi.string().max(20).min(4),
+  username: Joi.string().max(20).min(3),
   password: joiPassword
     .string()
     .minOfSpecialCharacters(2)

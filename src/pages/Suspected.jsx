@@ -9,7 +9,7 @@ import IDsFilter from "../components/IDsFilter";
 import { BiShow } from "react-icons/bi";
 import { getAppointments } from "../service/appointment";
 
-const SuspectedPage = () => {
+const SuspectedPage = ({ user }) => {
   const navigate = useNavigate();
   const [filters, setfilters] = useState({
     code: "",
@@ -19,9 +19,20 @@ const SuspectedPage = () => {
 
   const [idsData, setidsData] = useState({});
 
+  const is_supervisor = user?.groups?.includes("Supervisors");
+
   const { data, isPreviousData } = useQuery(
     ["appointments", page, filters.code, filters.name],
-    () => getAppointments(page, "", filters.code, filters.name, 2, true),
+    () =>
+      getAppointments(
+        page,
+        "",
+        filters.code,
+        filters.name,
+        2,
+        true,
+        is_supervisor
+      ),
     {
       keepPreviousData: true,
     }

@@ -68,6 +68,9 @@ function matchingfingers(
       var fpobjecttt = JSON.parse(xmlhttp.responseText);
       if (is_lost && fpobjecttt.MatchingScore > 75) {
         setMatchScore(fingerprint);
+      } else if(is_lost && fpobjecttt.MatchingScore < 75){
+        setMatchScore({id:"is_none"})
+
       } else if (!is_lost) {
         setMatchScore(fpobjecttt.MatchingScore);
       }

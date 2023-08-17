@@ -41,9 +41,9 @@ export const setIDs = async (data) => {
   return ids;
 };
 
-export const get_nationalID = async (page, code, name, approve) => {
+export const get_nationalID = async (page, code, name, approve, printed) => {
   const { data } = await apiClient.get(
-    `${ids_endpoint}?page=${page}&applicant__approved=${approve}&applicant__transaction_code=${code}&applicant__first_name__icontains=${name}`
+    `${ids_endpoint}?page=${page}&applicant__approved=${approve}&applicant__transaction_code=${code}&applicant__first_name__icontains=${name}&is_printed=${printed}`
   );
   return data;
 };
@@ -98,6 +98,8 @@ export const update_fingerprint = async (data) => {
 };
 
 export const get_fingerprint_data = async (is_suspected) => {
-  const { data } = await apiClient.get(fingerprint_endpoint+`?is_suspected=${is_suspected}`);
+  const { data } = await apiClient.get(
+    fingerprint_endpoint + `?is_suspected=${is_suspected}`
+  );
   return data;
 };

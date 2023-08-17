@@ -11,12 +11,32 @@ import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { menu } from "../components/common/menus";
 import fingerprint from "/fingerprint.png";
 
-const Menu = () => {
+const Menu = ({ user }) => {
   const [menuItems, setMenuItems] = useState([]);
 
+  const userGroup = (name, admin) =>
+    admin == 1 ? user?.is_staff : user?.groups?.includes(name);
+  const is_supervisor = userGroup("Supervisors");
+  const is_enroller = userGroup("Enrollers");
+  const is_reviewer = userGroup("Reviewers");
+  const is_admin = userGroup("is_staff", 1);
+
+  const filterByRole = (role) => {
+    const menus = menu.filter((menu) => menu.role.includes(role));
+    setMenuItems(menus);
+  };
+
   useEffect(() => {
-    setMenuItems(menu);
-  }, []);
+    is_supervisor
+      ? filterByRole("supervisor")
+      : is_enroller
+      ? filterByRole("enroller")
+      : is_reviewer
+      ? filterByRole("reviewer")
+      : is_admin
+      ? setMenuItems(menu)
+      : "";
+  }, [is_admin, is_supervisor, is_reviewer, is_enroller]);
 
   const toggleSubMenu = (itemId) => {
     setMenuItems((prevMenuItems) =>

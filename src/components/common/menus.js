@@ -20,6 +20,7 @@ export const menu = [
     link: "/",
     children: [],
     isOpen: false,
+    role: ["admin", "supervisor"],
   },
   {
     id: 2,
@@ -41,6 +42,7 @@ export const menu = [
       },
     ],
     isOpen: false,
+    role: ["admin"],
   },
   {
     id: 3,
@@ -49,6 +51,7 @@ export const menu = [
     link: "/applicants",
     children: [],
     isOpen: false,
+    role: ["admin", "supervisor", "enroller", "reviewer"],
   },
   {
     id: 3222,
@@ -57,6 +60,7 @@ export const menu = [
     link: "/suspected",
     children: [],
     isOpen: false,
+    role: ["admin", "supervisor", "reviewer"],
   },
   {
     id: "c1",
@@ -65,14 +69,35 @@ export const menu = [
     link: "/unapproved_ids",
     children: [],
     isOpen: false,
+    role: ["admin", "supervisor", "reviewer"],
   },
   {
     id: "c2",
     icon: BsFingerprint,
-    title: "Approved IDs",
-    link: "/approved_ids",
-    children: [],
+    title: "national ID",
+    link: "#",
+    children: [
+      {
+        id: "a2",
+        icon: BsFingerprint,
+        title: "Approved IDs",
+        link: "/approved_ids",
+      },
+      {
+        id: "a3",
+        icon: BsFingerprint,
+        title: "Renew ID",
+        link: "/renew_id",
+      },
+      {
+        id: "a4",
+        icon: BsFingerprint,
+        title: "Remodify ID",
+        link: "/remodify_id",
+      },
+    ],
     isOpen: false,
+    role: ["admin", "supervisor"],
   },
   {
     id: "c3",
@@ -81,18 +106,20 @@ export const menu = [
     link: "/lost_id",
     children: [],
     isOpen: false,
+    role: ["admin", "supervisor", "enroller", "reviewer"],
   },
 
   {
-    id: 3,
+    id: 30,
     icon: FaUsers,
     title: "Users",
     link: "/users",
     children: [],
     isOpen: false,
+    role: ["admin"],
   },
   {
-    id: 3,
+    id: 322,
     icon: TbReportSearch,
     title: "Reports",
     link: "#",
@@ -111,5 +138,6 @@ export const menu = [
       },
     ],
     isOpen: false,
+    role: ["admin"],
   },
 ];

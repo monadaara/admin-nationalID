@@ -115,21 +115,20 @@ const IDModal = ({ onHide, show, ids, idsMutation, is_approve }) => {
           <Button className="mr-4" colorScheme="red" onClick={onHide}>
             Close
           </Button>
-          {!is_approve && (
-            <Button
-              onClick={() => {
-                idsMutation.mutate({
-                  national_id: ids?.id,
-                  approved: true,
-                });
-              }}
-              type="submit"
-              colorScheme="blue"
-              mr={3}
-            >
-              Approve
-            </Button>
-          )}
+
+          <Button
+            onClick={() => {
+              idsMutation.mutate({
+                national_id: ids?.id,
+                printed: true,
+              });
+            }}
+            type="submit"
+            colorScheme="blue"
+            mr={3}
+          >
+            Print
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

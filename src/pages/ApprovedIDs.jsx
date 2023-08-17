@@ -30,7 +30,7 @@ const ApprovedPage = () => {
   const { isLoading, isError, error, data, isFetching, isPreviousData } =
     useQuery(
       ["ids", page, filters.code, filters.name],
-      () => get_nationalID(page, filters.code, filters.name, true),
+      () => get_nationalID(page, filters.code, filters.name, true, false),
       {
         keepPreviousData: true,
       }
@@ -40,7 +40,7 @@ const ApprovedPage = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries(["ids", page, filters.code, filters.name]);
       setModalShow(false);
-      toast.success("ID seccessfully approved", { theme: "colored" });
+      // toast.success("ID seccessfully approved", { theme: "colored" });
     },
   });
 
@@ -103,7 +103,7 @@ const ApprovedPage = () => {
 
       <div className="bg-slate-200 h-[48px] mb-10 flex items-center justify-between">
         <h3 className="text-2xl font-medium my-6 py-2 px-3">
-          Approved ID cards
+          National ID cards
         </h3>
         <div className="flex px-10">
           <button

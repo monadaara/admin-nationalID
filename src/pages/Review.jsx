@@ -11,6 +11,7 @@ import {
   AlertDialogOverlay,
   AlertDialogCloseButton,
   Button,
+  theme,
 } from "@chakra-ui/react";
 import { setIDs } from "../service/processing";
 import { toast } from "react-toastify";
@@ -382,12 +383,17 @@ const Review = () => {
                         setdeleteModalShow(false);
                         navigate(-1);
                       },
+                      onError: (error) => {
+                        toast.error(error.response.data.detail, {
+                          theme: "colored",
+                        });
+                      },
                     }
                   );
                 }}
                 ml={3}
               >
-                Delete
+                Accept
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

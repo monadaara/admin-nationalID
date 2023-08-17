@@ -11,10 +11,11 @@ export const getAppointments = async (
   code = "",
   name = "",
   stage = 1,
-  is_suspected=false
+  is_suspected = false,
+  dis_aggree = false
 ) => {
   const { data } = await apiClient.get(
-    `${appointment_endpointment}?page=${pageParam}&date=${date}&applicant__status=Booked&center=&ordering=date&applicant__stage=${stage}&applicant__first_name=${name}&applicant__transaction_code=${code}&is_suspected=${is_suspected}`
+    `${appointment_endpointment}?page=${pageParam}&date=${date}&applicant__status=Booked&center=&ordering=date&applicant__stage=${stage}&applicant__first_name=${name}&applicant__transaction_code=${code}&is_suspected=${is_suspected}&dis_aggree=${dis_aggree}`
   );
 
   return data;

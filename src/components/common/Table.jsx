@@ -112,7 +112,7 @@ const CustomTable = ({ columns, data, lists, setModal_data, viewDocument }) => {
                             ))}
                           </MenuList>
                         </Menu>
-                      ) : lists ? (
+                      ) : lists.title ? (
                         <div className="flex gap-x-3">
                           <button
                             onClick={() => {

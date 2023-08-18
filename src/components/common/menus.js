@@ -56,9 +56,22 @@ export const menu = [
   {
     id: 3222,
     icon: MdBlurOff,
-    title: "Suspected",
-    link: "/suspected",
-    children: [],
+    title: "Duplications",
+    link: "#",
+    children: [
+      {
+        id: 32221,
+        icon: MdBlurOff,
+        title: "Biometric",
+        link: "/suspected",
+      },
+      {
+        id: 32221,
+        icon: MdBlurOff,
+        title: "Text",
+        link: "/suspected_text",
+      },
+    ],
     isOpen: false,
     role: ["admin", "supervisor", "reviewer"],
   },

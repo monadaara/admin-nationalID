@@ -84,7 +84,7 @@ const UpdateCenterModel = ({
                   theme: "colored",
                 });
 
-                queryClient.invalidateQueries(["centers"]);
+                queryClient.invalidateQueries("centers");
                 onHide();
               },
               onError: (error) => {

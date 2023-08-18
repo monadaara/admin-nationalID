@@ -13,6 +13,7 @@ import { matchingfinger_templates } from "../service/biometricFun";
 import moment from "moment/moment";
 const UnapprovedPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [filters, setfilters] = useState({
     code: "",
     name: "",
@@ -25,7 +26,7 @@ const UnapprovedPage = () => {
     abnormal: [],
   });
 
-  const { data, isPreviousData } = useQuery(
+  const { data, isPreviousData, refetch } = useQuery(
     ["appointments", page, filters.code, filters.name],
     () => getAppointments(page, "", filters.code, filters.name, 2),
     {
@@ -78,7 +79,6 @@ const UnapprovedPage = () => {
         const data2 = moment(temp.tem2.created_at);
 
         if (data1.isAfter(data2)) {
-          console.log("heeeeeeeeeere1111");
           applicantMutation.mutate({
             applicant_id: temp.tem1.owner?.id,
             // status: "Cancelled",
@@ -93,6 +93,7 @@ const UnapprovedPage = () => {
             admin: true,
           });
         }
+        refetch();
       });
     }
 

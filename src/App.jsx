@@ -20,6 +20,8 @@ import SuspectedPage from "./pages/Suspected";
 import RenewID from "./pages/Renew";
 import ModifyID from "./pages/Modify";
 import { useQuery } from "react-query";
+import TextSuspectedPage from "./pages/TextSuspected";
+import TextReview from "./pages/TextReview";
 
 const App = () => {
   const navigate = useNavigate();
@@ -50,6 +52,11 @@ const App = () => {
           <Route path="/unapproved_ids/:id" element={<Review />} />
           <Route path="/suspected" element={<SuspectedPage user={data} />} />
           <Route path="/suspected/:id" element={<Review />} />
+          <Route
+            path="/suspected_text"
+            element={<TextSuspectedPage user={data} />}
+          />
+          <Route path="/suspected_text/:id" element={<TextReview />} />
           <Route path="/lost_id" element={<LostID />} />
           <Route path="/renew_id" element={<RenewID />} />
           <Route path="/remodify_id" element={<ModifyID />} />

@@ -138,7 +138,7 @@ const AddCenterModel = ({
                     value={day.short}
                     className="mr-5"
                     {...register("days")}
-                    defaultChecked
+                    // defaultChecked
                   >
                     {day.long}
                   </Checkbox>

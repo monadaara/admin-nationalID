@@ -72,14 +72,14 @@ const UsersPage = () => {
   const columns = ["Name", "Email", "Username", "Type", "Center"];
   const lists = [
     {
-      title: "Update Device",
+      title: "Update User",
       onclick: () => {
         setIs_updating(true);
         setModalShow(true);
       },
     },
     {
-      title: "Delete Device",
+      title: "Delete User",
       onclick: () => setdeleteModalShow(true),
     },
   ];
@@ -100,8 +100,6 @@ const UsersPage = () => {
       ? data
       : data?.filter((device) => device.center?.id == usersFilter.center);
 
- 
-
   let usersData = usersFilter.name
     ? usersFilteredByName
     : usersFilter.status
@@ -109,8 +107,6 @@ const UsersPage = () => {
     : usersFilter.center
     ? usersFilteredByCenter
     : data;
-
-  
 
   const users = usersData?.map((user) => {
     return {
@@ -148,7 +144,7 @@ const UsersPage = () => {
     resolver: joiResolver(is_updating ? userSchema : createUserSchema),
   });
 
-  console.log("heeeeeeeeeere",is_updating)
+  console.log("heeeeeeeeeere", is_updating);
   const onSubmit = (data) => {
     if (is_updating) {
       updateUsersMutation.mutate(

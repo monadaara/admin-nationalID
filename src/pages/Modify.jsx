@@ -32,6 +32,7 @@ const ModifyID = () => {
     if (nationalID?.results[0]?.id) {
       localStorage.setItem("applicant_id", nationalID.results[0]?.applicant.id);
       localStorage.setItem("is_lost", true);
+      localStorage.removeItem("is_new");
       navigate("/processing");
     }
   }, [nationalID]);

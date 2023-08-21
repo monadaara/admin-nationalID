@@ -39,8 +39,14 @@ const UpdateCenterModel = ({
 }) => {
   const queryClient = useQueryClient();
   const locationMutation = useMutation((data) => updateCenterLocation(data));
-  const centerMutation = useMutation((data) => updateCenter(data));
-  const daysMutation = useMutation((data) => setDays(data));
+  const centerMutation = useMutation((data) => updateCenter(data), {
+    onSettled: (data, error) => {},
+  });
+  const daysMutation = useMutation((data) => setDays(data), {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("centers");
+    },
+  });
   const daysOfWeek = [
     { short: "Sun", long: "Sunday" },
     { short: "Mon", long: "Monday" },
@@ -84,7 +90,6 @@ const UpdateCenterModel = ({
                   theme: "colored",
                 });
 
-                queryClient.invalidateQueries("centers");
                 onHide();
               },
               onError: (error) => {
@@ -123,22 +128,25 @@ const UpdateCenterModel = ({
               />
             </div>
             <div className="my-3">
-              {daysOfWeek.map((day, index) => {
-                return (
-                  <Checkbox
-                    key={day.short}
-                    value={day.short}
-                    className="mr-5"
-                    {...register("days")}
-                    defaultChecked={
-                      index < center_data?.days?.length &&
-                      center_data?.days?.[index].name
-                    }
-                  >
-                    {day.long}
-                  </Checkbox>
-                );
-              })}
+              {center_data?.days?.length &&
+                daysOfWeek.map((day, index) => {
+                  console.log("days", center_data?.days);
+                  return (
+                    <Checkbox
+                      key={day.short}
+                      value={day.short}
+                      className="mr-5"
+                      {...register("days")}
+                      defaultChecked={
+                        center_data?.days?.some((da) => da.name == day.short)
+                          ? day.short
+                          : ""
+                      }
+                    >
+                      {day.long}
+                    </Checkbox>
+                  );
+                })}
             </div>
             <ModalFooter>
               <Button className="mr-4" colorScheme="red" onClick={onHide}>

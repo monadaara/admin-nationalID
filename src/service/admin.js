@@ -1,6 +1,6 @@
 import apiClient from "./api-client";
 
-const user_endpoint = "auth/users/";
+const user_endpoint = "core/users/";
 const id_endpoint = "ids/";
 export const get_logged_user = () => {
   const logged_user = JSON.parse(localStorage.getItem("logged_user"));
@@ -20,7 +20,7 @@ export const set_users = async (data) => {
   return users;
 };
 export const update_users = async (data) => {
-  const { data: users } = await apiClient.put(
+  const { data: users } = await apiClient.patch(
     `${user_endpoint}${data.id}/`,
     data
   );

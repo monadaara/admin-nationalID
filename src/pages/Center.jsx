@@ -35,7 +35,7 @@ const CenterPage = () => {
   const [deleteModalShow, setdeleteModalShow] = React.useState(false);
   const [center_data, setCenter_data] = React.useState({});
   const [updateModalShow, setUpdateModalShow] = React.useState(false);
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["centers"],
     queryFn: getCenters,
   });
@@ -50,7 +50,10 @@ const CenterPage = () => {
   const lists = [
     {
       title: "Update center",
-      onclick: () => setUpdateModalShow(true),
+      onclick: () => {
+        refetch;
+        setUpdateModalShow(true);
+      },
     },
     {
       title: "Delete center",
@@ -115,6 +118,7 @@ const CenterPage = () => {
     }
   }, [center_data]);
 
+  console.log("center_datacenter_data", center_data);
   const {
     register,
     formState: { errors },

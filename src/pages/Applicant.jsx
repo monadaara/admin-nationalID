@@ -79,11 +79,12 @@ const ApplicantPage = () => {
   useEffect(() => {
     if (appointment?.applicant?.id) {
       localStorage.setItem("applicant_id", appointment?.applicant?.id);
+      localStorage.removeItem("is_lost");
+      localStorage.removeItem("is_new");
       navigate("/processing");
     }
   }, [appointment]);
 
-  
   return (
     <div className="">
       <ApplicationFilter

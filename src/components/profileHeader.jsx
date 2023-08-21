@@ -11,8 +11,6 @@ const ProfileHeader = () => {
   });
   const navigate = useNavigate();
 
-  const center = localStorage.getItem("center");
-
   return (
     <div className=" h-16 bg-slate-300 w-full flex  items-center">
       <div className="w-full flex justify-end  mr-10">
